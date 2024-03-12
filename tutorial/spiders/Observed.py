@@ -1,7 +1,7 @@
 import scrapy
 
 class MITREAttackSpider(scrapy.Spider):
-    name = 'mitreattack'
+    name = 'mittreattack'
     start_urls = ['https://attack.mitre.org/groups/']
 
     def parse(self, response):
@@ -23,13 +23,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Creating an absolute URL by joining the base URL with the relative URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
 
-            # yield {
-            #     'Column1': column1_data.strip() if column1_data else None,
-            #     'Column1_URL': column1_url_absolute,
-            #     'Column2': column2_data.strip() if column2_data else None,
-            #     'Column3': column3_data.strip() if column3_data else None,
-            #     'Column4': column4_data.strip() if column4_data else None,
-            # }
+            yield {
+                'Column1': column1_data.strip() if column1_data else None,
+                'Column1_URL': column1_url_absolute,
+                'Column2': column2_data.strip() if column2_data else None,
+                'Column3': column3_data.strip() if column3_data else None,
+                'Column4': column4_data.strip() if column4_data else None,
+            }
 
     #         # Follow the link in the first column to crawl the next table
     #         if column1_url_absolute:
