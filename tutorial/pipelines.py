@@ -17,7 +17,7 @@ MYSQL_SETTINGS = {
     'port': 3306,
     'database': 'etiapt',
     'user': 'root',
-    'password': '1234',
+    'password': '7777',
 }
 
 class MySQLPipeline:
@@ -41,8 +41,6 @@ class MySQLPipeline:
                 print("Duplicate entry found for the provided values in apt_group table.")
             else:
                 print("An error occurred:", err)
-        
-
         return item
 #group_name varchar(255) 
 # mitre_name varchar(255) 
