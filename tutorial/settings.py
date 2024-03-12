@@ -106,3 +106,16 @@ ROBOTSTXT_OBEY = True
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
+
+
+
+DATABASE = {
+    'drivername': 'mysql',
+    'host': 'localhost',
+    'port': '3306',
+    'username': 'root',
+    'password': 'Nanie123nanie',
+    'database': 'your_database',
+    'query': {'charset': 'utf8'}
+}
+
