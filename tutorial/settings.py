@@ -12,10 +12,25 @@ BOT_NAME = "tutorial"
 SPIDER_MODULES = ["tutorial.spiders"]
 NEWSPIDER_MODULE = "tutorial.spiders"
 
+# database setup
+DATABASE = {
+    'drivername': 'mysql',
+    'host': 'localhost',
+    'port': '3306',
+    'username': 'root',
+    'password': '7777',
+    'database': 'etiapt',
+    'query': {'charset': 'utf8'}
+}
+
+#groups pipe line
+ITEM_PIPELINES = {
+    'tutorial.pipelines.MySQLPipeline': 300,
+}
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "tutorial (+http://www.yourdomain.com)"
-
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
