@@ -17,7 +17,7 @@ MYSQL_SETTINGS = {
     'port': 3306,
     'database': 'etiapt',
     'user': 'root',
-    'password': '7777',
+    'password': '1234',
 }
 
 class MySQLPipeline:
