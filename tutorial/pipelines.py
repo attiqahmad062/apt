@@ -30,11 +30,19 @@ class MySQLPipeline:
         self.conn.close()
 
     def process_item(self, item, spider):
-        print("called")
-        sql = "INSERT INTO apt_group (mitre_name, group_name,summary,associated_groups,group_url) VALUES (%s, %s,%s,%s,%s)"
-        values = (item.get('MittreName'), item.get('GroupName'), item.get('Summary'),item.get('AssociatedGroups'),item.get('Url'))
-        self.cursor.execute(sql, values)
-        self.conn.commit()
+       
+        try:
+            sql = "INSERT INTO apt_group (mitre_name, group_name, summary, associated_groups, group_url) VALUES (%s, %s, %s, %s, %s)"
+            values = (item.get('MittreName'), item.get('GroupName'), item.get('Summary'), item.get('AssociatedGroups'), item.get('Url'))
+            self.cursor.execute(sql, values)
+            self.conn.commit()
+        except mysql.connector.Error as err:
+            if err.errno == 1062:  # MySQL error code for duplicate entry
+                print("Duplicate entry found for the provided values in apt_group table.")
+            else:
+                print("An error occurred:", err)
+        
+
         return item
 #group_name varchar(255) 
 # mitre_name varchar(255) 
