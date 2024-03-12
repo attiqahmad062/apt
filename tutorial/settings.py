@@ -13,15 +13,15 @@ SPIDER_MODULES = ["tutorial.spiders"]
 NEWSPIDER_MODULE = "tutorial.spiders"
 
 # database setup
-DATABASE = {
-    'drivername': 'mysql',
-    'host': 'localhost',
-    'port': '3306',
-    'username': 'root',
-    'password': '7777',
-    'database': 'etiapt',
-    'query': {'charset': 'utf8'}
-}
+# DATABASE = {
+#     'drivername': 'mysql',
+#     'host': 'localhost',
+#     'port': '3306',
+#     'username': 'root',
+#     'password': '7777',
+#     'database': 'etiapt',
+#     'query': {'charset': 'utf8'}
+# }
 
 #groups pipe line
 ITEM_PIPELINES = {
