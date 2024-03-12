@@ -31,8 +31,8 @@ class MySQLPipeline:
 
     def process_item(self, item, spider):
         print("called")
-        sql = "INSERT INTO apt_group (mitre_name, group_name,summary) VALUES (%s, %s,%s)"
-        values = (item.get('MittreName'), item.get('GroupName'), item.get('Summary'))
+        sql = "INSERT INTO apt_group (mitre_name, group_name,summary,associated_groups,group_url) VALUES (%s, %s,%s,%s,%s)"
+        values = (item.get('MittreName'), item.get('GroupName'), item.get('Summary'),item.get('AssociatedGroups'),item.get('Url'))
         self.cursor.execute(sql, values)
         self.conn.commit()
         return item

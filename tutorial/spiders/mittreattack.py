@@ -24,9 +24,9 @@ class MITREAttackSpider(scrapy.Spider):
            
             yield {
                 'MittreName': column1_data.strip() if column1_data else None,
-                # 'Column1_URL': column1_url_absolute,
+                'Url': column1_url_absolute,
                 'GroupName': column2_data.strip() if column2_data else None,
-                # 'Column3': column3_data.strip() if column3_data else None,
+                'AssociatedGroups': column3_data.strip() if column3_data else None,
                 'Summary': column4_data.strip() if column4_data else None,
             }
     #         yield response.follow(column1_url_absolute, callback=self.parse_group)
