@@ -21,7 +21,7 @@ class MITREAttackSpider(scrapy.Spider):
 
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-           
+
             yield {
                 'MittreName': column1_data.strip() if column1_data else None,
                 'Url': column1_url_absolute,
@@ -29,25 +29,26 @@ class MITREAttackSpider(scrapy.Spider):
                 'AssociatedGroups': column3_data.strip() if column3_data else None,
                 'Summary': column4_data.strip() if column4_data else None,
             }
-
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
                 yield response.follow(column1_url_absolute, self.parse_group_page)
 
     def parse_group_page(self, response):
-        # Assuming the table structure is similar to the one on the groups page
-        table_rows = response.css('table.table tr')
+        # Updated CSS selectors to match the new structure and maintain sequence
+        table_rows = response.css('table.techniques-used tr')
 
         for row in table_rows:
-            # Extracting data from each column in the row
+            # Extracting data from each column in the row, ensuring correct sequence
             domain_data = row.css('td:nth-child(1)::text').get()
-            id_data = row.css('td:nth-child(2)::text').get()
-            name_data = row.css('td:nth-child(3)::text').get()
-            use_data = row.css('td:nth-child(4)::text').get()
+            id_data = row.css('td:nth-child(2) a::text').get()
+            sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
+            name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+            use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
 
             yield {
                 'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
-                'Name': name_data.strip() if name_data else None,
-                'Use': use_data.strip() if use_data else None,
+                'SubID': sub_id_data.strip() if sub_id_data else None,
+                'Name': name_data if name_data else None,
+                'Use': use_data if use_data else None,
             }
