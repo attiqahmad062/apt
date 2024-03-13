@@ -22,13 +22,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
 
-            yield {
-                'MittreName': column1_data.strip() if column1_data else None,
-                'Url': column1_url_absolute,
-                'GroupName': column2_data.strip() if column2_data else None,
-                'AssociatedGroups': column3_data.strip() if column3_data else None,
-                'Summary': column4_data.strip() if column4_data else None,
-            }
+            # yield {
+            #     'MittreName': column1_data.strip() if column1_data else None,
+            #     'Url': column1_url_absolute,
+            #     'GroupName': column2_data.strip() if column2_data else None,
+            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
+            #     'Summary': column4_data.strip() if column4_data else None,
+            # }
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
                 yield response.follow(column1_url_absolute, self.parse_group_page)
@@ -45,10 +45,27 @@ class MITREAttackSpider(scrapy.Spider):
             name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
 
+            # yield {
+            #     'Domain': domain_data.strip() if domain_data else None,
+            #     'ID': id_data.strip() if id_data else None,
+            #     'SubID': sub_id_data.strip() if sub_id_data else None,
+            #     'Name': name_data if name_data else None,
+            #     'Use': use_data if use_data else None,
+            # }
+
+        # New section to scrape the table with class name 'table-alternate'
+        alternate_table_rows = response.css('table.table-alternate tr')
+
+        for row in alternate_table_rows:
+            # Extracting data from each column in the row
+            id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
+            name_data = ' '.join(row.css('td:nth-child(2) *::text').getall()).strip()
+            references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+            techniques_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+
             yield {
-                'Domain': domain_data.strip() if domain_data else None,
-                'ID': id_data.strip() if id_data else None,
-                'SubID': sub_id_data.strip() if sub_id_data else None,
+                'ID': id_data if id_data else None,
                 'Name': name_data if name_data else None,
-                'Use': use_data if use_data else None,
+                'References': references_data if references_data else None,
+                'Techniques': techniques_data if techniques_data else None,
             }
