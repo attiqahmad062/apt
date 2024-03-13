@@ -29,15 +29,25 @@ class MITREAttackSpider(scrapy.Spider):
                 'AssociatedGroups': column3_data.strip() if column3_data else None,
                 'Summary': column4_data.strip() if column4_data else None,
             }
-    #         yield response.follow(column1_url_absolute, callback=self.parse_group)
-    # def parse_group(self, response):
-    #     # Extracting data from the group page
-    #     print("hello i m ",response)
-    #     # group_name = response.css('h1::text').get()
-    #     # description = response.css('div.container p::text').get()
 
-    #     # yield {
-    #     #     'Group Name': group_name.strip() if group_name else None,
-    #     #     'Description': description.strip() if description else None,
-    #     #     'URL': response.url
-    #     # }
+            # Follow the URL to the group's page and parse the table data
+            if column1_url_absolute:
+                yield response.follow(column1_url_absolute, self.parse_group_page)
+
+    def parse_group_page(self, response):
+        # Assuming the table structure is similar to the one on the groups page
+        table_rows = response.css('table.table tr')
+
+        for row in table_rows:
+            # Extracting data from each column in the row
+            domain_data = row.css('td:nth-child(1)::text').get()
+            id_data = row.css('td:nth-child(2)::text').get()
+            name_data = row.css('td:nth-child(3)::text').get()
+            use_data = row.css('td:nth-child(4)::text').get()
+
+            yield {
+                'Domain': domain_data.strip() if domain_data else None,
+                'ID': id_data.strip() if id_data else None,
+                'Name': name_data.strip() if name_data else None,
+                'Use': use_data.strip() if use_data else None,
+            }

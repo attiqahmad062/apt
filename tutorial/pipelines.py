@@ -11,13 +11,13 @@ import mysql.connector
 # class TutorialPipeline:
 #     def process_item(self, item, spider):
 #         return item
-#group pipeline
+# group pipeline
 MYSQL_SETTINGS = {
     'host': 'localhost',
     'port': 3306,
     'database': 'etiapt',
     'user': 'root',
-    'password': '7777',
+    'password': '1234',
 }
 
 class MySQLPipeline:
@@ -40,9 +40,7 @@ class MySQLPipeline:
             if err.errno == 1062:  # MySQL error code for duplicate entry
                 print("------------Duplicate entry found for the provided values in apt_group table.--------------")
             else:
-                print("------------An error occurred:-----------------", err)
-        
-
+                print("--------------An error occurred:-----------------", err)
                 print("An error occurred:", err)
         return item
 #group_name varchar(255) 
