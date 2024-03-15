@@ -1,4 +1,6 @@
 import scrapy
+import re
+
 
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
@@ -54,6 +56,7 @@ class MITREAttackSpider(scrapy.Spider):
             # }
 
         # New section to scrape the table with class name 'table-alternate'
+        
         alternate_table_rows = response.css('table.table-alternate tr')
 
         for row in alternate_table_rows:
@@ -63,9 +66,11 @@ class MITREAttackSpider(scrapy.Spider):
             references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
             techniques_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
 
-            yield {
-                'ID': id_data if id_data else None,
-                'Name': name_data if name_data else None,
-                'References': references_data if references_data else None,
-                'Techniques': techniques_data if techniques_data else None,
-            }
+            # Check if ID starts with 'S'
+            if id_data and id_data.startswith('S') and id_data[1:].isdigit():
+                yield {
+                    'ID': id_data if id_data else None,
+                    'Name': name_data if name_data else None,
+                    'References': references_data if references_data else None,
+                    'Techniques': techniques_data if techniques_data else None,
+                }
