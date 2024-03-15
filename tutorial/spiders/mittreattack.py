@@ -54,7 +54,6 @@ class MITREAttackSpider(scrapy.Spider):
             #     'Name': name_data if name_data else None,
             #     'Use': use_data if use_data else None,
             # }
-
         # New section to scrape the table with class name 'table-alternate'
         
         alternate_table_rows = response.css('table.table-alternate tr')
