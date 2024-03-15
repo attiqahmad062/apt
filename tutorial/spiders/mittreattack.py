@@ -8,9 +8,9 @@ class MITREAttackSpider(scrapy.Spider):
 
     def parse(self, response):
         # Extracting data from the table with class name 'table'
-        table_rows = response.css('table.table tr')
+        groupTable = response.css('table.table tr')
 
-        for row in table_rows:
+        for row in groupTable:
             # Extracting data from each column in the row
             column1_data = row.css('td:nth-child(1) a::text').get()
             column1_url = row.css('td:nth-child(1) a::attr(href)').get()
@@ -37,9 +37,9 @@ class MITREAttackSpider(scrapy.Spider):
 
     def parse_group_page(self, response):
         # Updated CSS selectors to match the new structure and maintain sequence
-        table_rows = response.css('table.techniques-used tr')
+        techniqueTable = response.css('table.techniques-used tr')
 
-        for row in table_rows:
+        for row in techniqueTable:
             # Extracting data from each column in the row, ensuring correct sequence
             domain_data = row.css('td:nth-child(1)::text').get()
             id_data = row.css('td:nth-child(2) a::text').get()
@@ -56,9 +56,9 @@ class MITREAttackSpider(scrapy.Spider):
             # }
         # New section to scrape the table with class name 'table-alternate'
         
-        alternate_table_rows = response.css('table.table-alternate tr')
+        softwareTable = response.css('table.table-alternate tr')
 
-        for row in alternate_table_rows:
+        for index, row in enumerate(softwareTable, start=1):
             # Extracting data from each column in the row
             id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
             name_data = ' '.join(row.css('td:nth-child(2) *::text').getall()).strip()
@@ -72,11 +72,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Check if ID starts with 'S'
             if id_data and id_data.startswith('S') and id_data[1:].isdigit():
                 yield {
+                    'Sequence': index,
                     'ID': id_data if id_data else None,
                     'Name': name_data if name_data else None,
                     'References': references_data if references_data else None,
                     'Techniques': ' '.join(techniques_data) if techniques_data else None,
                 }
+
 
 
                 
