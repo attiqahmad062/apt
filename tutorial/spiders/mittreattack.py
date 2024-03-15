@@ -63,15 +63,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Extracting data from each column in the row
             id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
             name_data = ' '.join(row.css('td:nth-child(2) *::text').getall()).strip()
-            references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+            # references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+            references_data = row.css('td:nth-child(3) span sup a::attr(href)').get()
             # Extracting techniques
             techniques_data = []
             techniques_nodes = row.css('td:nth-child(4) *::text').getall()
             for node in techniques_nodes:
                 techniques_data.append(node.strip())
-
-
-
             # Check if ID starts with 'S'
             if id_data and id_data.startswith('S') and id_data[1:].isdigit():
                 yield {
