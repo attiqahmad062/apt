@@ -5,11 +5,9 @@ import re
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
-
     def parse(self, response):
         # Extracting data from the table with class name 'table'
         groupTable = response.css('table.table tr')
-
         for row in groupTable:
             # Extracting data from each column in the row
             column1_data = row.css('td:nth-child(1) a::text').get()
@@ -17,13 +15,10 @@ class MITREAttackSpider(scrapy.Spider):
             column2_data = row.css('td:nth-child(2) a::text').get()
             column3_data = row.css('td:nth-child(3)::text').get()
             column4_data = row.css('td:nth-child(4) p::text').get()
-
             # Extracting URL from the first column using a different selector
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
-
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-
             # yield {
             #     'MittreName': column1_data.strip() if column1_data else None,
             #     'Url': column1_url_absolute,
@@ -38,6 +33,38 @@ class MITREAttackSpider(scrapy.Spider):
     def parse_group_page(self, response):
         # Updated CSS selectors to match the new structure and maintain sequence
         techniqueTable = response.css('table.techniques-used tr')
+       # Use CSS selector to target the div with class "card"
+#         box = response.css(".card")
+# #         # Extract text from the div within the box with id "card-id"
+#         box = box.css('.card-body')
+#         box_text =box.css('div:nth-child(2)::text').getall()
+#         print(" box dat is : ",box_text)
+#         # Extract group_id
+#         group_id = box_text[1].strip() if len(box_text) > 1 else None
+
+#         # Safely extract created_at
+#         created_at = box_text[11].strip() if len(box_text) > 11 else None
+
+#         # Safely extract last_modified
+#         last_modified = box_text[13].strip() if len(box_text) > 13 else None
+
+#         yield {
+#                 'group_id': group_id,
+#                 'created_at': created_at,
+#                 'last_modified': last_modified
+#             }
+        # compains 
+        if response.css('h2#campaigns'):
+            # Extract table data
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                yield {
+                    'ID': row.css('td:nth-child(1) a::text').get(),
+                    'Name': row.css('td:nth-child(2) a::text').get(),
+                    'First Seen': row.css('td:nth-child(3) *::text').get(),
+                    'Last Seen': row.css('td:nth-child(4) *::text').get(),
+                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                }
 
         for row in techniqueTable:
             # Extracting data from each column in the row, ensuring correct sequence
@@ -70,14 +97,14 @@ class MITREAttackSpider(scrapy.Spider):
             for node in techniques_nodes:
                 techniques_data.append(node.strip())
             # Check if ID starts with 'S'
-            if id_data and id_data.startswith('S') and id_data[1:].isdigit():
-                yield {
-                    'Sequence': index,
-                    'ID': id_data if id_data else None,
-                    'Name': name_data if name_data else None,
-                    'References': references_data if references_data else None,
-                    'Techniques': ' '.join(techniques_data) if techniques_data else None,
-                }
+            # if id_data and id_data.startswith('S') and id_data[1:].isdigit():
+                # yield {
+                #     'Sequence': index,
+                #     'ID': id_data if id_data else None,
+                #     'Name': name_data if name_data else None,
+                #     'References': references_data if references_data else None,
+                #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
+                # }
 
 
 
