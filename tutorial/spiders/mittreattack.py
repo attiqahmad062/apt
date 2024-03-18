@@ -36,9 +36,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Extracting data from each column in the row, ensuring correct sequence
             domain_data = row.css('td:nth-child(1)::text').get()
             id_data = row.css('td:nth-child(2) a::text').get()
+            technique_url = row.css('td:nth-child(2) a::attr(href)').get()
             sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
             name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
+
+            if technique_url:
+                yield response.follow(technique_url, self.parse_techniques)
 
             # yield {
             #     'Domain': domain_data.strip() if domain_data else None,
@@ -83,14 +87,14 @@ class MITREAttackSpider(scrapy.Spider):
         #              'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
         #         }
         #associated groups (aliasDescription)
-        if response.css('h2#aliasDescription'):
-            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
-                name = row.xpath('./td[1]/text()').get()
-                cleaned_name = re.sub(r'\W+', '', name) if name else name
-                description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
-                yield {
-                    'Name': cleaned_name,
-                    'Description': description
-                }
-
-
+        # if response.css('h2#aliasDescription'):
+        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
+        #         name = row.xpath('./td[1]/text()').get()
+        #         cleaned_name = re.sub(r'\W+', '', name) if name else name
+        #         description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
+        #         yield {
+        #             'Name': cleaned_name,
+        #             'Description': description
+        #         }
+        def parse_techniques(self, response):
+            print("I'm in the techniques")
