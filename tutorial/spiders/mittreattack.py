@@ -84,14 +84,13 @@ class MITREAttackSpider(scrapy.Spider):
         #         }
         #associated groups (aliasDescription)
         if response.css('h2#aliasDescription'):
-            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]'):
-                name = row.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[1]/text()').get()
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
+                name = row.xpath('./td[1]/text()').get()
                 cleaned_name = re.sub(r'\W+', '', name) if name else name
-                description = row.xpath('//*[@id="scite-ref-4-a"]/sup//a/@href').get()
+                description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
                 yield {
-                    'Name': name,
+                    'Name': cleaned_name,
                     'Description': description
                 }
-        
 
 
