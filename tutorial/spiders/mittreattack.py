@@ -72,14 +72,26 @@ class MITREAttackSpider(scrapy.Spider):
                 # }
                 
         # campaigns 
-        if response.css('h2#campaigns'):
-            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+        # if response.css('h2#campaigns'):
+        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+        #         yield {
+        #             'ID': row.css('td:nth-child(1) a::text').get(),
+        #             'Name': row.css('td:nth-child(2) a::text').get(),
+        #             'First Seen': row.css('td:nth-child(3) *::text').get(),
+        #             'Last Seen': row.css('td:nth-child(4) *::text').get(),
+        #             'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+        #              'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+        #         }
+        #associated groups (aliasDescription)
+        if response.css('h2#aliasDescription'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]'):
+                name = row.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[1]/text()').get()
+                cleaned_name = re.sub(r'\W+', '', name) if name else name
+                description = row.xpath('//*[@id="scite-ref-4-a"]/sup//a/@href').get()
                 yield {
-                    'ID': row.css('td:nth-child(1) a::text').get(),
-                    'Name': row.css('td:nth-child(2) a::text').get(),
-                    'First Seen': row.css('td:nth-child(3) *::text').get(),
-                    'Last Seen': row.css('td:nth-child(4) *::text').get(),
-                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                    'Name': name,
+                    'Description': description
                 }
+        
+
 
