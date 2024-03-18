@@ -1,11 +1,9 @@
 import scrapy
 import re
-
-
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
-    def parse(self, response):
+    def parse(self, response):# crawl the main page of groups
         # Extracting data from the table with class name 'table'
         groupTable = response.css('table.table tr')
         for row in groupTable:
@@ -30,42 +28,10 @@ class MITREAttackSpider(scrapy.Spider):
             if column1_url_absolute:
                 yield response.follow(column1_url_absolute, self.parse_group_page)
 
-    def parse_group_page(self, response):
-        # Updated CSS selectors to match the new structure and maintain sequence
+    def parse_group_page(self, response): # Next pages associated with the  group are crawled here
+
+        #Technique Table 
         techniqueTable = response.css('table.techniques-used tr')
-       # Use CSS selector to target the div with class "card"
-#         box = response.css(".card")
-# #         # Extract text from the div within the box with id "card-id"
-#         box = box.css('.card-body')
-#         box_text =box.css('div:nth-child(2)::text').getall()
-#         print(" box dat is : ",box_text)
-#         # Extract group_id
-#         group_id = box_text[1].strip() if len(box_text) > 1 else None
-
-#         # Safely extract created_at
-#         created_at = box_text[11].strip() if len(box_text) > 11 else None
-
-#         # Safely extract last_modified
-#         last_modified = box_text[13].strip() if len(box_text) > 13 else None
-
-#         yield {
-#                 'group_id': group_id,
-#                 'created_at': created_at,
-#                 'last_modified': last_modified
-#             }
-        # compains 
-        if response.css('h2#campaigns'):
-            # Extract table data
-            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
-                yield {
-                    'ID': row.css('td:nth-child(1) a::text').get(),
-                    'Name': row.css('td:nth-child(2) a::text').get(),
-                    'First Seen': row.css('td:nth-child(3) *::text').get(),
-                    'Last Seen': row.css('td:nth-child(4) *::text').get(),
-                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
-                }
-
         for row in techniqueTable:
             # Extracting data from each column in the row, ensuring correct sequence
             domain_data = row.css('td:nth-child(1)::text').get()
@@ -81,10 +47,9 @@ class MITREAttackSpider(scrapy.Spider):
             #     'Name': name_data if name_data else None,
             #     'Use': use_data if use_data else None,
             # }
-        # New section to scrape the table with class name 'table-alternate'
-        
+            
+        # Software Table:
         softwareTable = response.css('table.table-alternate tr')
-
         for index, row in enumerate(softwareTable, start=1):
             # Extracting data from each column in the row
             id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
@@ -105,7 +70,16 @@ class MITREAttackSpider(scrapy.Spider):
                 #     'References': references_data if references_data else None,
                 #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
                 # }
-
-
-
                 
+        # campaigns 
+        if response.css('h2#campaigns'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                yield {
+                    'ID': row.css('td:nth-child(1) a::text').get(),
+                    'Name': row.css('td:nth-child(2) a::text').get(),
+                    'First Seen': row.css('td:nth-child(3) *::text').get(),
+                    'Last Seen': row.css('td:nth-child(4) *::text').get(),
+                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                }
+
