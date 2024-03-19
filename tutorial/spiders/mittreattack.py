@@ -149,5 +149,6 @@ class MITREAttackSpider(scrapy.Spider):
         #             'Data Component': data_component,
         #             'Detects': detects
         #         }
-
+#
+# 
         
