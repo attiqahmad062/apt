@@ -98,27 +98,41 @@ class MITREAttackSpider(scrapy.Spider):
         #         }
     def parse_techniques(self, response):
          #subtechniques
-        for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
-            yield {
-                'id': row.xpath('td[1]/a/text()').get(),
-                'name': row.xpath('td[2]/a/text()').get(),
-            }
+        # for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
+            # yield {
+            #     'id': row.xpath('td[1]/a/text()').get(),
+            #     'name': row.xpath('td[2]/a/text()').get(),
+            # }
             
         # procedure examples
-        if response.css('h2#examples'):
-                rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
-                for row in rows:
-                        # Extract the data from each cell in the row
-                        id = row.css('td:nth-child(1) a::text').get()
-                        name = row.css('td:nth-child(2) a::text').get()
-                        description = row.css('td:nth-child(3) p::text').get()
+        # if response.css('h2#examples'):
+        #         rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
+        #         for row in rows:
+        #                 # Extract the data from each cell in the row
+        #                 id = row.css('td:nth-child(1) a::text').get()
+        #                 name = row.css('td:nth-child(2) a::text').get()
+        #                 description = row.css('td:nth-child(3) p::text').get()
                         
                         # Yield the extracted data
-                        yield {
-                            'ID': id,
-                            'Name': name,
-                            'Description': description
-                    }
+                    #     yield {
+                    #         'ID': id,
+                    #         'Name': name,
+                    #         'Description': description
+                    # }
+        #mitigations
+        if response.css('h2#mitigations'):
+            rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
+            for row in rows: 
+                id = row.css('td:nth-child(1) a::text').get()
+                mitigation = row.css('td:nth-child(2) a::text').get()
+                description = row.css('td:nth-child(3) p::text').get()
+                
+                # Yield the extracted data
+                yield {
+                    'ID': id,
+                    'Mitigation': mitigation,
+                    'Description': description
+                }
         
 
         
