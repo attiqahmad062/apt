@@ -26,7 +26,7 @@ class MITREAttackSpider(scrapy.Spider):
             # }
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
-                yield response.follow(column1_url_absolute, self.parse_group_page)
+              yield response.follow(column1_url_absolute, self.parse_group_page)
 
     def parse_group_page(self, response): # Next pages associated with the  group are crawled here
 
@@ -40,17 +40,18 @@ class MITREAttackSpider(scrapy.Spider):
             sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
             name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
-
-            if technique_url:
-                yield response.follow(technique_url, self.parse_techniques)
-
+            technique_url=response.urljoin(technique_url.strip()) if technique_url else None
+    
             # yield {
             #     'Domain': domain_data.strip() if domain_data else None,
             #     'ID': id_data.strip() if id_data else None,
             #     'SubID': sub_id_data.strip() if sub_id_data else None,
             #     'Name': name_data if name_data else None,
             #     'Use': use_data if use_data else None,
+            #     # "TechniqueUrl":technique_url
             # }
+            if technique_url:
+                yield response.follow(technique_url, self.parse_techniques)
             
         # Software Table:
         softwareTable = response.css('table.table-alternate tr')
@@ -68,7 +69,7 @@ class MITREAttackSpider(scrapy.Spider):
             # Check if ID starts with 'S'
             # if id_data and id_data.startswith('S') and id_data[1:].isdigit():
                 # yield {
-                #     'Sequence': index,
+
                 #     'ID': id_data if id_data else None,
                 #     'Name': name_data if name_data else None,
                 #     'References': references_data if references_data else None,
@@ -96,5 +97,5 @@ class MITREAttackSpider(scrapy.Spider):
         #             'Name': cleaned_name,
         #             'Description': description
         #         }
-        def parse_techniques(self, response):
+    def parse_techniques(self, response):
             print("I'm in the techniques")
