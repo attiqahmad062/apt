@@ -126,13 +126,28 @@ class MITREAttackSpider(scrapy.Spider):
                 id = row.css('td:nth-child(1) a::text').get()
                 mitigation = row.css('td:nth-child(2) a::text').get()
                 description = row.css('td:nth-child(3) p::text').get()
-                
+                if id.__contains__('M'):
                 # Yield the extracted data
-                yield {
+                   yield {
                     'ID': id,
                     'Mitigation': mitigation,
                     'Description': description
                 }
-        
+        #detections
+        # if response.css('h2#detection'):
+        #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
+        #      for row in rows:
+        #         # Extract the data from each cell in the row
+        #         id = row.css('td:nth-child(1) a::text').get()
+        #         data_source = row.css('td:nth-child(2) a::text').get()
+        #         data_component = row.css('td:nth-child(3) a::text').get()
+        #         detects = row.css('td:nth-child(4) p::text').get()
+        #         # Yield the extracted   data
+        #         yield {
+        #             'ID': id,
+        #             'Data Source': data_source,
+        #             'Data Component': data_component,
+        #             'Detects': detects
+        #         }
 
         
