@@ -103,7 +103,22 @@ class MITREAttackSpider(scrapy.Spider):
                 'id': row.xpath('td[1]/a/text()').get(),
                 'name': row.xpath('td[2]/a/text()').get(),
             }
+            
         # procedure examples
-
+        if response.css('h2#examples'):
+                rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
+                for row in rows:
+                        # Extract the data from each cell in the row
+                        id = row.css('td:nth-child(1) a::text').get()
+                        name = row.css('td:nth-child(2) a::text').get()
+                        description = row.css('td:nth-child(3) p::text').get()
+                        
+                        # Yield the extracted data
+                        yield {
+                            'ID': id,
+                            'Name': name,
+                            'Description': description
+                    }
+        
 
         
