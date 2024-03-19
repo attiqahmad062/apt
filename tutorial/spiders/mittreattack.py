@@ -41,14 +41,13 @@ class MITREAttackSpider(scrapy.Spider):
             name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
             technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-    
             # yield {
             #     'Domain': domain_data.strip() if domain_data else None,
             #     'ID': id_data.strip() if id_data else None,
             #     'SubID': sub_id_data.strip() if sub_id_data else None,
             #     'Name': name_data if name_data else None,
             #     'Use': use_data if use_data else None,
-            #     # "TechniqueUrl":technique_url
+            #     "TechniqueUrl":technique_url
             # }
             if technique_url:
                 yield response.follow(technique_url, self.parse_techniques)
@@ -98,4 +97,13 @@ class MITREAttackSpider(scrapy.Spider):
         #             'Description': description
         #         }
     def parse_techniques(self, response):
-            print("I'm in the techniques")
+         #subtechniques
+        for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
+            yield {
+                'id': row.xpath('td[1]/a/text()').get(),
+                'name': row.xpath('td[2]/a/text()').get(),
+            }
+        # procedure examples
+
+
+        
