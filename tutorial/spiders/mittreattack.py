@@ -126,6 +126,8 @@ class MITREAttackSpider(scrapy.Spider):
                 id = row.css('td:nth-child(1) a::text').get()
                 mitigation = row.css('td:nth-child(2) a::text').get()
                 description = row.css('td:nth-child(3) p::text').get()
+                mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
+                technique_url=response.urljoin(technique_url.strip()) if technique_url else None
                 if id.__contains__('M'):
                 # Yield the extracted data
                    yield {
