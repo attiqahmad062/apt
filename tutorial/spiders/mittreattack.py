@@ -1,5 +1,6 @@
 import scrapy
 import re
+from tutorial.items import groupTable, techniquesTable
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
@@ -17,7 +18,7 @@ class MITREAttackSpider(scrapy.Spider):
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-            # yield {
+            # yield groupTable {
             #     'MittreName': column1_data.strip() if column1_data else None,
             #     'Url': column1_url_absolute,
             #     'GroupName': column2_data.strip() if column2_data else None,
@@ -27,9 +28,7 @@ class MITREAttackSpider(scrapy.Spider):
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
-
     def parse_group_page(self, response): # Next pages associated with the  group are crawled here
-
         #Technique Table 
         techniqueTable = response.css('table.techniques-used tr')
         for row in techniqueTable:
@@ -41,16 +40,16 @@ class MITREAttackSpider(scrapy.Spider):
             name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
             technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-            # yield {
-            #     'Domain': domain_data.strip() if domain_data else None,
-            #     'ID': id_data.strip() if id_data else None,
-            #     'SubID': sub_id_data.strip() if sub_id_data else None,
-            #     'Name': name_data if name_data else None,
-            #     'Use': use_data if use_data else None,
-            #     "TechniqueUrl":technique_url
-            # }
-            if technique_url:
-                yield response.follow(technique_url, self.parse_techniques)
+            yield techniquesTable ({'Domain': domain_data.strip() if domain_data else None,
+                'ID': id_data.strip() if id_data else None,
+               
+                # 'SubID': sub_id_data.strip() if sub_id_data else None,
+                'Name': name_data if name_data else None,
+                'Use': use_data if use_data else None,
+                "TechniqueUrl":technique_url
+           })
+            # if technique_url:
+            #     yield response.follow(technique_url, self.parse_techniques)
             
         # Software Table:
         softwareTable = response.css('table.table-alternate tr')
@@ -128,13 +127,13 @@ class MITREAttackSpider(scrapy.Spider):
                 description = row.css('td:nth-child(3) p::text').get()
                 mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
                 technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-                if id.__contains__('M'):
+                # if id.__contains__('M'):
                 # Yield the extracted data
-                   yield {
-                    'ID': id,
-                    'Mitigation': mitigation,
-                    'Description': description
-                }
+                #    yield {
+                #     'ID': id,
+                #     'Mitigation': mitigation,
+                #     'Description': description
+                # }
         #detections
         # if response.css('h2#detection'):
         #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
