@@ -33,22 +33,30 @@ class MITREAttackSpider(scrapy.Spider):
         techniqueTable = response.css('table.techniques-used tr')
         for row in techniqueTable:
             # Extracting data from each column in the row, ensuring correct sequence
-          if len(row.css('table.techniques-used tr')) < 5:
             domain_data = row.css('td:nth-child(1)::text').get()
             id_data = row.css('td:nth-child(2) a::text').get()
             technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-            # sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
-            name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
-            use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-            technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-            yield  ({'Domain': domain_data.strip() if domain_data else None,
+            
+            # Checking the length of the row to determine the correct column for 'sub_id_data'
+            if len(row.css('td')) >= 5:
+                sub_id_data = row.css('td:nth-child(3) a::text').get()
+                name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+                use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
+            else:
+                sub_id_data = None
+                name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+                use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+            
+            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
+            
+            yield {
+                'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
-               
                 # 'SubID': sub_id_data.strip() if sub_id_data else None,
-                # 'Name': name_data if name_data else None,
-                'Use': use_data ,
-                "TechniqueUrl":technique_url
-           })
+                'Name': name_data if name_data else None,
+                'Use': use_data if use_data else None,
+                'TechniqueUrl': technique_url
+            }
             # if technique_url:
             #     yield response.follow(technique_url, self.parse_techniques)
             
