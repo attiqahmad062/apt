@@ -60,8 +60,6 @@ class Detections(scrapy.Item):
     DataSource=scrapy.Field()
     DataComponent=scrapy.Field()
     Detects=scrapy.Field()
-
-
 class MySQLPipeline:
     def open_spider(self, spider):
         self.conn = mysql.connector.connect(**MYSQL_SETTINGS)
@@ -134,8 +132,20 @@ class MySQLPipeline:
                     print("An error occurred:", err)
         elif isinstance(item,ProcedureExamples):
             try:    
-                sql = "INSERT INTO sub_techniques ( id, name,description) VALUES (%s, %s,%s)"
-                values = ( item.get('ID'), item.get('Name'),item.get('Description'))
+                sql = "INSERT INTO procedure_example ( id, name,description,reference) VALUES (%s, %s,%s,%s)"
+                values = ( item.get('ID'), item.get('Name'),item.get('Description'),item.get('Reference'))
+                self.cursor.execute(sql, values)
+                self.conn.commit()
+            except mysql.connector.Error as err:
+                if err.errno == 1062:  # MySQL error code for duplicate entry
+                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                else:
+                    print("--------------An error occurred:-----------------", err)
+                    print("An error occurred:", err)
+        elif isinstance(item,Mitigations):
+            try:    
+                sql = "INSERT INTO procedure_example ( id, name,description,reference) VALUES (%s, %s,%s,%s)"
+                values = ( item.get('ID'), item.get('Name'),item.get('Description'),item.get('Reference'))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
             except mysql.connector.Error as err:
