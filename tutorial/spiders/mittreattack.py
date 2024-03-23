@@ -1,6 +1,6 @@
 import scrapy
 import re
-from tutorial.items import groupTable, techniquesTable
+from tutorial.pipelines import groupTable, techniquesTable
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
@@ -8,7 +8,7 @@ class MITREAttackSpider(scrapy.Spider):
         # Extracting data from the table with class name 'table'
         groupTable = response.css('table.table tr')
         for row in groupTable:
-            # Extracting data from each column in the row
+           
             column1_data = row.css('td:nth-child(1) a::text').get()
             column1_url = row.css('td:nth-child(1) a::attr(href)').get()
             column2_data = row.css('td:nth-child(2) a::text').get()
@@ -33,19 +33,20 @@ class MITREAttackSpider(scrapy.Spider):
         techniqueTable = response.css('table.techniques-used tr')
         for row in techniqueTable:
             # Extracting data from each column in the row, ensuring correct sequence
+          if len(row.css('table.techniques-used tr')) < 5:
             domain_data = row.css('td:nth-child(1)::text').get()
             id_data = row.css('td:nth-child(2) a::text').get()
             technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-            sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
-            name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-            use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
+            # sub_id_data = row.css('td:nth-child(3) a::text').get() if len(row.css('td')) >= 5 else None
+            name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+            use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
             technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-            yield techniquesTable ({'Domain': domain_data.strip() if domain_data else None,
+            yield  ({'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
                
                 # 'SubID': sub_id_data.strip() if sub_id_data else None,
-                'Name': name_data if name_data else None,
-                'Use': use_data if use_data else None,
+                # 'Name': name_data if name_data else None,
+                'Use': use_data ,
                 "TechniqueUrl":technique_url
            })
             # if technique_url:
@@ -72,16 +73,15 @@ class MITREAttackSpider(scrapy.Spider):
                 #     'Name': name_data if name_data else None,
                 #     'References': references_data if references_data else None,
                 #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
-                # }
-                
+                # } 
         # campaigns 
         # if response.css('h2#campaigns'):
         #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
         #         yield {
         #             'ID': row.css('td:nth-child(1) a::text').get(),
         #             'Name': row.css('td:nth-child(2) a::text').get(),
-        #             'First Seen': row.css('td:nth-child(3) *::text').get(),
-        #             'Last Seen': row.css('td:nth-child(4) *::text').get(),
+        #             'FirstSeen': row.css('td:nth-child(3) *::text').get(),
+        #             'LastSeen': row.css('td:nth-child(4) *::text').get(),
         #             'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
         #              'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
         #         }
@@ -99,8 +99,8 @@ class MITREAttackSpider(scrapy.Spider):
          #subtechniques
         # for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
             # yield {
-            #     'id': row.xpath('td[1]/a/text()').get(),
-            #     'name': row.xpath('td[2]/a/text()').get(),
+            #     'ID': row.xpath('td[1]/a/text()').get(),
+            #     'Name': row.xpath('td[2]/a/text()').get(),
             # }
             
         # procedure examples
@@ -146,8 +146,8 @@ class MITREAttackSpider(scrapy.Spider):
         #         # Yield the extracted   data
         #         yield {
         #             'ID': id,
-        #             'Data Source': data_source,
-        #             'Data Component': data_component,
+        #             'DataSource': data_source,
+        #             'DataComponent': data_component,
         #             'Detects': detects
         #         }
 #

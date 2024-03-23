@@ -31,6 +31,36 @@ class techniquesTable(scrapy.Item):
     Use=scrapy.Field()
     Domain=scrapy.Field()
    
+class SoftwareTable(scrapy.Item):
+    ID=scrapy.Field()
+    Name=scrapy.Field()
+    Refference=scrapy.Field()
+    Techniques=scrapy.Field()
+class CompainsTable(scrapy.Item):
+    ID=scrapy.Field()
+    Name=scrapy.Field()
+    FirstSeen=scrapy.Field()
+    LastSeen=scrapy.Field()
+    References=scrapy.Field()
+    Techniques=scrapy.Field()
+class SubTechniques(scrapy.Item):
+    ID=scrapy.Field()
+    Name=scrapy.Field()
+   
+class ProcedureExamples(scrapy.Item):
+    Id=scrapy.Field()
+    Name=scrapy.Field()
+    Description=scrapy.Field()
+class Mitigations(scrapy.Item):
+    ID=scrapy.Field()
+    Mitigation=scrapy.Field()
+    Description=scrapy.Field()
+class Detections(scrapy.Item):
+    ID=scrapy.Field()
+    DataSource=scrapy.Field()
+    DataComponent=scrapy.Field()
+    Detects=scrapy.Field()
+
 
 class MySQLPipeline:
     def open_spider(self, spider):
@@ -54,7 +84,6 @@ class MySQLPipeline:
                     print("--------------An error occurred:-----------------", err)
                     print("An error occurred:", err)
         elif isinstance(item,techniquesTable):
-            print("there")
             try:
                 
                 sql = "INSERT INTO apt_group_techniques ( techniques_id, description, domain_name ) VALUES (%s, %s, %s)"
@@ -67,9 +96,59 @@ class MySQLPipeline:
                 else:
                     print("--------------An error occurred:-----------------", err)
                     print("An error occurred:", err)
+        elif isinstance(item,SoftwareTable):
+            try: 
+                sql = "INSERT INTO software_used ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
+                values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
+                self.cursor.execute(sql, values)
+                self.conn.commit()
+            except mysql.connector.Error as err:
+                if err.errno == 1062:  # MySQL error code for duplicate entry
+                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                else:
+                    print("--------------An error occurred:-----------------", err)
+                    print("An error occurred:", err)
+        elif isinstance(item,CompainsTable):
+            try:
+                sql = "INSERT INTO CompainsTable ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
+                values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
+                self.cursor.execute(sql, values)
+                self.conn.commit()
+            except mysql.connector.Error as err:
+                if err.errno == 1062:  # MySQL error code for duplicate entry
+                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                else:
+                    print("--------------An error occurred:-----------------", err)
+                    print("An error occurred:", err)
+        elif isinstance(item,SubTechniques):
+            try:
+                sql = "INSERT INTO sub_techniques ( id, name) VALUES (%s, %s)"
+                values = ( item.get('ID'), item.get('Name'))
+                self.cursor.execute(sql, values)
+                self.conn.commit()
+            except mysql.connector.Error as err:
+                if err.errno == 1062:  # MySQL error code for duplicate entry
+                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                else:
+                    print("--------------An error occurred:-----------------", err)
+                    print("An error occurred:", err)
+        elif isinstance(item,ProcedureExamples):
+            try:    
+                sql = "INSERT INTO sub_techniques ( id, name,description) VALUES (%s, %s,%s)"
+                values = ( item.get('ID'), item.get('Name'),item.get('Description'))
+                self.cursor.execute(sql, values)
+                self.conn.commit()
+            except mysql.connector.Error as err:
+                if err.errno == 1062:  # MySQL error code for duplicate entry
+                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                else:
+                    print("--------------An error occurred:-----------------", err)
+                    print("An error occurred:", err)
         return item
+        
 #group_name varchar(255) 
 # mitre_name varchar(255) 
 # summary longtext 
 # created_date datetime 
 # modified_date
+ 
