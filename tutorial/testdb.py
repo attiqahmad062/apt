@@ -15,11 +15,16 @@ def main():
         conn = mysql.connector.connect(**MYSQL_SETTINGS)
         if conn.is_connected():
             print("Connected to MySQL database")
-
+        cursor = conn.cursor()   
+        cursor.execute("select * from etiapt.sub_id")
+        rows=cursor.fetchall()
+        
+        for row in rows:
+            print(row)
         # Perform database operations here...
 
         # Close connection
-        conn.close()
+        # conn.close()
         print("Connection closed")
     except mysql.connector.Error as error:
         print("Error connecting to MySQL database:", error)

@@ -59,7 +59,7 @@ class MITREAttackSpider(scrapy.Spider):
             if text and text.strip().startswith('[') and text.strip().endswith(']'):
                 # This is a reference link, extract it
                 references.append(href)
-          
+           
             yield ( {
                 'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
