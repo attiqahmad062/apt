@@ -1,0 +1,1 @@
+select * from etiapt.sub_techniques;
