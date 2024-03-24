@@ -28,62 +28,60 @@ class MITREAttackSpider(scrapy.Spider):
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
-    def parse_group_page(self, response): # Next pages associated with the  group are crawled here
-        #Technique Table 
+    def parse_group_page(self, response):
         techniqueTable = response.css('table.techniques-used tr')
         for row in techniqueTable:
-            # Extracting data from each column in the row, ensuring correct sequence
             domain_data = row.css('td:nth-child(1)::text').get()
             id_data = row.css('td:nth-child(2) a::text').get()
             technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-            references_tag=''
-            # Checking the length of the row to determine the correct column for 'sub_id_data'
-            references=[]
+            references = []
+
             if len(row.css('td')) >= 5:
                 sub_id_data = row.css('td:nth-child(3) a::text').get()
                 name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
                 use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
-                references_tag='td:nth-child(5) a' 
-                for link in response.css(references_tag):
-                    # Extract the href attribute
-                        href = link.css('::attr(href)').get()
-                        # Extract the text content of the <a> tag
-                        text = link.css('::text').get()
-                
-                    # Check if the text matches the pattern of numbers in square brackets
-                        if text and text.strip().startswith('[') and text.strip().endswith(']'):
-                        # This is a reference link, extract it
-                          if href not in references:
-                            references.append(href)
+                references_tag = 'td:nth-child(5) a'
             else:
                 sub_id_data = None
                 name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
                 use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-                references_tag='td:nth-child(4) a'
-                for link in response.css(references_tag):
-                # Extract the href attribute
-                    href = link.css('::attr(href)').get()
-                    # Extract the text content of the <a> tag
-                    text = link.css('::text').get()
-            
-                # Check if the text matches the pattern of numbers in square brackets
-                    if text and text.strip().startswith('[') and text.strip().endswith(']'):
-                    # This is a reference link, extract it
-                      if href not in references: 
-                        references.append(href)
-            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-            
+                references_tag = 'td:nth-child(4) a'
 
-           
-            yield ( {
+            # Extract references only from the current row
+            for link in row.css(references_tag):
+                href = link.css('::attr(href)').get()
+                text = link.css('::text').get()
+
+                if text and text.strip().startswith('[') and text.strip().endswith(']'):
+                    if href not in references:
+                        references.append(href)
+
+            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
+
+            yield {
                 'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
                 'SubID': sub_id_data.strip() if sub_id_data else None,
-                # 'Name': name_data if name_data else None,
                 'Use': use_data if use_data else None,
-                "references":references
-                # 'TechniqueUrl': technique_url
-            })
+                "references": references
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             if technique_url:
                 yield response.follow(technique_url, self.parse_techniques)
             
