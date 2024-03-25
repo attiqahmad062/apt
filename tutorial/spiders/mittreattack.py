@@ -18,55 +18,81 @@ class MITREAttackSpider(scrapy.Spider):
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-            yield GroupTable ({
-                'MittreName': column1_data.strip() if column1_data else None,
-                'Url': column1_url_absolute,
-                'GroupName': column2_data.strip() if column2_data else None,
-                'AssociatedGroups': column3_data.strip() if column3_data else None,
-                'Summary': column4_data.strip() if column4_data else None,
-            })
+            # yield GroupTable ({
+            #     'MittreName': column1_data.strip() if column1_data else None,
+            #     'Url': column1_url_absolute,
+            #     'GroupName': column2_data.strip() if column2_data else None,
+            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
+            #     'Summary': column4_data.strip() if column4_data else None,
+            # })
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
     def parse_group_page(self, response):
-        techniqueTable = response.css('table.techniques-used tr')
-        for row in techniqueTable:
-            domain_data = row.css('td:nth-child(1)::text').get()
-            id_data = row.css('td:nth-child(2) a::text').get()
-            technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-            references = []
+                # Extract the ID
+        id_info = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[1]/div[2]/div[1]/div')
+        
+        # Extract the Contributors
+        contributors = response.css('div.row.card-data:nth-child(2) span.h5.card-title::text').getnext().strip()
+        
+        # Extract the Version
+        version = response.css('div.row.card-data:nth-child(3) span.h5.card-title::text').getnext().strip()
+        
+        # Extract the Created date
+        created = response.css('div.row.card-data:nth-child(4) span.h5.card-title::text').getnext().strip()
+        
+        # Extract the Last Modified date
+        last_modified = response.css('div.row.card-data:nth-child(5) span.h5.card-title::text').getnext().strip()
+        
+        yield {
+            'ID': id_info,
+            'Contributors': contributors,
+            'Version': version,
+            'Created': created,
+            'Last Modified': last_modified
+        }
 
-            if len(row.css('td')) >= 5:
-                sub_id_data = row.css('td:nth-child(3) a::text').get()
-                name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-                use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
-                references_tag = 'td:nth-child(5) a'
-            else:
-                sub_id_data = None
-                name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
-                use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-                references_tag = 'td:nth-child(4) a'
 
-            # Extract references only from the current row
-            for link in row.css(references_tag):
-                href = link.css('::attr(href)').get()
-                text = link.css('::text').get()
 
-                if text and text.strip().startswith('[') and text.strip().endswith(']'):
-                    if href not in references:
-                        references.append(href)
 
-            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-            references_string = ' '.join(references)
-            yield TechniquesTable( {
-                'Domain': domain_data.strip() if domain_data else None,
-                'ID': id_data.strip() if id_data else None,
-                'SubId': sub_id_data.strip() if sub_id_data else None,
-                'Use': use_data if use_data else None,
-                "References": references_string
-            })
-            if technique_url:
-                yield response.follow(technique_url, self.parse_techniques)
+        # techniqueTable = response.css('table.techniques-used tr')
+        # for row in techniqueTable:
+        #     domain_data = row.css('td:nth-child(1)::text').get()
+        #     id_data = row.css('td:nth-child(2) a::text').get()
+        #     technique_url = row.css('td:nth-child(2) a::attr(href)').get()
+        #     references = []
+
+        #     if len(row.css('td')) >= 5:
+        #         sub_id_data = row.css('td:nth-child(3) a::text').get()
+        #         name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+        #         use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
+        #         references_tag = 'td:nth-child(5) a'
+        #     else:
+        #         sub_id_data = None
+        #         name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+        #         use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+        #         references_tag = 'td:nth-child(4) a'
+
+        #     # Extract references only from the current row
+        #     for link in row.css(references_tag):
+        #         href = link.css('::attr(href)').get()
+        #         text = link.css('::text').get()
+
+        #         if text and text.strip().startswith('[') and text.strip().endswith(']'):
+        #             if href not in references:
+        #                 references.append(href)
+
+        #     technique_url = response.urljoin(technique_url.strip()) if technique_url else None
+        #     references_string = ' '.join(references)
+        #     # yield TechniquesTable( {
+            #     'Domain': domain_data.strip() if domain_data else None,
+            #     'ID': id_data.strip() if id_data else None,
+            #     'SubId': sub_id_data.strip() if sub_id_data else None,
+            #     'Use': use_data if use_data else None,
+            #     "References": references_string
+            # })
+            # # if technique_url:
+            #     yield response.follow(technique_url, self.parse_techniques)
             
         # Software Table:
         softwareTable = response.css('table.table-alternate tr')
@@ -110,61 +136,61 @@ class MITREAttackSpider(scrapy.Spider):
                     'Name': cleaned_name,
                     'Description': description
                 }
-    def parse_techniques(self, response):
-        #  subtechniques
-        for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
-            yield SubTechniques( {
-                'ID': row.xpath('td[1]/a/text()').get(),
-                'Name': row.xpath('td[2]/a/text()').get(),
-            })
+#     def parse_techniques(self, response):
+#         #  subtechniques
+#         for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
+#             # yield SubTechniques( {
+#             #     'ID': row.xpath('td[1]/a/text()').get(),
+#             #     'Name': row.xpath('td[2]/a/text()').get(),
+#             # })
             
-        # procedure examples
-        if response.css('h2#examples'):
-                rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
-                for row in rows:
-                        # Extract the data from each cell in the row
-                        id = row.css('td:nth-child(1) a::text').get()
-                        name = row.css('td:nth-child(2) a::text').get()
-                        description = row.css('td:nth-child(3) p::text').get()
+#         # procedure examples
+#         if response.css('h2#examples'):
+#                 rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
+#                 for row in rows:
+#                         # Extract the data from each cell in the row
+#                         id = row.css('td:nth-child(1) a::text').get()
+#                         name = row.css('td:nth-child(2) a::text').get()
+#                         description = row.css('td:nth-child(3) p::text').get()
                         
                     
-                        yield ProcedureExamples( {
-                            'ID': id,
-                            'Name': name,
-                            'Description': description
-                    })
-        #mitigations
-        # if response.css('h2#mitigations'):
-        #     rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
-        #     for row in rows: 
-        #         id = row.css('td:nth-child(1) a::text').get()
-        #         mitigation = row.css('td:nth-child(2) a::text').get()
-        #         description = row.css('td:nth-child(3) p::text').get()
-        #         mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
-        #         technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-        #         if id.__contains__('M'):
+#                         yield ProcedureExamples( {
+#                             'ID': id,
+#                             'Name': name,
+#                             'Description': description
+#                     })
+#         #mitigations
+#         # if response.css('h2#mitigations'):
+#         #     rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
+#         #     for row in rows: 
+#         #         id = row.css('td:nth-child(1) a::text').get()
+#         #         mitigation = row.css('td:nth-child(2) a::text').get()
+#         #         description = row.css('td:nth-child(3) p::text').get()
+#         #         mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
+#         #         technique_url=response.urljoin(technique_url.strip()) if technique_url else None
+#         #         if id.__contains__('M'):
                
-        #            yield Mitigations({
-        #             'ID': id,
-        #             'Mitigation': mitigation,
-        #             'Description': description
-        #         })
-        #detections
-        # if response.css('h2#detection'):
-        #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
-        #      for row in rows:
-        #         # Extract the data from each cell in the row
-        #         id = row.css('td:nth-child(1) a::text').get()
-        #         data_source = row.css('td:nth-child(2) a::text').get()
-        #         data_component = row.css('td:nth-child(3) a::text').get()
-        #         detects = row.css('td:nth-child(4) p::text').get()
-        #         # Yield the extracted   data
-        #         yield   {
-        #             'ID': id,
-        #             'DataSource': data_source,
-        #             'DataComponent': data_component,
-        #             'Detects': detects
-        #         }
-#
-# 
+#         #            yield Mitigations({
+#         #             'ID': id,
+#         #             'Mitigation': mitigation,
+#         #             'Description': description
+#         #         })
+#         #detections
+#         # if response.css('h2#detection'):
+#         #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
+#         #      for row in rows:
+#         #         # Extract the data from each cell in the row
+#         #         id = row.css('td:nth-child(1) a::text').get()
+#         #         data_source = row.css('td:nth-child(2) a::text').get()
+#         #         data_component = row.css('td:nth-child(3) a::text').get()
+#         #         detects = row.css('td:nth-child(4) p::text').get()
+#         #         # Yield the extracted   data
+#         #         yield   {
+#         #             'ID': id,
+#         #             'DataSource': data_source,
+#         #             'DataComponent': data_component,
+#         #             'Detects': detects
+#         #         }
+# #
+# # 
         
