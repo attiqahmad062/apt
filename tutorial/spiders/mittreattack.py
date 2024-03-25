@@ -18,13 +18,13 @@ class MITREAttackSpider(scrapy.Spider):
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-            # yield GroupTable ({
-            #     'MittreName': column1_data.strip() if column1_data else None,
-            #     'Url': column1_url_absolute,
-            #     'GroupName': column2_data.strip() if column2_data else None,
-            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
-            #     'Summary': column4_data.strip() if column4_data else None,
-            # })
+            yield GroupTable ({
+                'MittreName': column1_data.strip() if column1_data else None,
+                'Url': column1_url_absolute,
+                'GroupName': column2_data.strip() if column2_data else None,
+                'AssociatedGroups': column3_data.strip() if column3_data else None,
+                'Summary': column4_data.strip() if column4_data else None,
+            })
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
@@ -57,31 +57,14 @@ class MITREAttackSpider(scrapy.Spider):
                         references.append(href)
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-
-            yield {
+            references_string = ' '.join(references)
+            yield TechniquesTable( {
                 'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
-                'SubID': sub_id_data.strip() if sub_id_data else None,
+                'SubId': sub_id_data.strip() if sub_id_data else None,
                 'Use': use_data if use_data else None,
-                "references": references
-            }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                "References": references_string
+            })
             if technique_url:
                 yield response.follow(technique_url, self.parse_techniques)
             
@@ -99,41 +82,41 @@ class MITREAttackSpider(scrapy.Spider):
             for node in techniques_nodes:
                 techniques_data.append(node.strip())
             # Check if ID starts with 'S'
-            # if id_data and id_data.startswith('S') and id_data[1:].isdigit():
-                # yield SoftwareTable( {
-                #     'ID': id_data if id_data else None,
-                #     'Name': name_data if name_data else None,
-                #     'References': references_data if references_data else None,
-                #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
-                # } )
+            if id_data and id_data.startswith('S') and id_data[1:].isdigit():
+                yield SoftwareTable( {
+                    'ID': id_data if id_data else None,
+                    'Name': name_data if name_data else None,
+                    'References': references_data if references_data else None,
+                    'Techniques': ' '.join(techniques_data) if techniques_data else None,
+                } )
         # campaigns 
-        # if response.css('h2#campaigns'):
-        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
-        #         yield  CompainsTable({
-        #             'ID': row.css('td:nth-child(1) a::text').get(),
-        #             'Name': row.css('td:nth-child(2) a::text').get(),
-        #             'FirstSeen': row.css('td:nth-child(3) *::text').get(),
-        #             'LastSeen': row.css('td:nth-child(4) *::text').get(),
-        #             'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-        #              'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
-        #         })
+        if response.css('h2#campaigns'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                yield  CompainsTable({
+                    'ID': row.css('td:nth-child(1) a::text').get(),
+                    'Name': row.css('td:nth-child(2) a::text').get(),
+                    'FirstSeen': row.css('td:nth-child(3) *::text').get(),
+                    'LastSeen': row.css('td:nth-child(4) *::text').get(),
+                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                })
         #associated groups (aliasDescription)
-        # if response.css('h2#aliasDescription'):
-        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
-        #         name = row.xpath('./td[1]/text()').get()
-        #         cleaned_name = re.sub(r'\W+', '', name) if name else name
-        #         description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
-        #         yield {
-        #             'Name': cleaned_name,
-        #             'Description': description
-        #         }
+        if response.css('h2#aliasDescription'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
+                name = row.xpath('./td[1]/text()').get()
+                cleaned_name = re.sub(r'\W+', '', name) if name else name
+                description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
+                yield {
+                    'Name': cleaned_name,
+                    'Description': description
+                }
     def parse_techniques(self, response):
-         #subtechniques
-        # for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
-            # yield SubTechniques( {
-            #     'ID': row.xpath('td[1]/a/text()').get(),
-            #     'Name': row.xpath('td[2]/a/text()').get(),
-            # })
+        #  subtechniques
+        for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
+            yield SubTechniques( {
+                'ID': row.xpath('td[1]/a/text()').get(),
+                'Name': row.xpath('td[2]/a/text()').get(),
+            })
             
         # procedure examples
         if response.css('h2#examples'):
@@ -145,11 +128,11 @@ class MITREAttackSpider(scrapy.Spider):
                         description = row.css('td:nth-child(3) p::text').get()
                         
                     
-                    #     yield ProcedureExamples( {
-                    #         'ID': id,
-                    #         'Name': name,
-                    #         'Description': description
-                    # })
+                        yield ProcedureExamples( {
+                            'ID': id,
+                            'Name': name,
+                            'Description': description
+                    })
         #mitigations
         # if response.css('h2#mitigations'):
         #     rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
@@ -176,7 +159,7 @@ class MITREAttackSpider(scrapy.Spider):
         #         data_component = row.css('td:nth-child(3) a::text').get()
         #         detects = row.css('td:nth-child(4) p::text').get()
         #         # Yield the extracted   data
-        #         yield {
+        #         yield   {
         #             'ID': id,
         #             'DataSource': data_source,
         #             'DataComponent': data_component,
