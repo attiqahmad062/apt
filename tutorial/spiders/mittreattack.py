@@ -8,7 +8,6 @@ class MITREAttackSpider(scrapy.Spider):
         # Extracting data from the table with class name 'table'
         groupTable = response.css('table.table tr')
         for row in groupTable:
-           
             column1_data = row.css('td:nth-child(1) a::text').get()
             column1_url = row.css('td:nth-child(1) a::attr(href)').get()
             column2_data = row.css('td:nth-child(2) a::text').get()
@@ -29,39 +28,28 @@ class MITREAttackSpider(scrapy.Spider):
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
     def parse_group_page(self, response):
-        
-        
-        id_ = response.xpath('//span[contains(text(), "ID:")]/following-sibling::text()').get().strip()
-            # Extracting First Seen
-        first_seen = response.xpath('//span[contains(text(), "First Seen:")]/following-sibling::text()').get()
-        first_seen_text = response.xpath('//span[contains(text(), "First Seen:")]/following-sibling::text()').get()
-        first_seen = first_seen_text.strip() if first_seen_text else ''
-        
-        # Extracting Last Seen
-        last_seen_text = response.xpath('//span[contains(text(), "Last Seen:")]/following-sibling::text()').get()
-        last_seen = last_seen_text.strip() if last_seen_text else ''
-        contributors_text = response.xpath('//span[contains(text(), "Contributors:")]/following-sibling::text()').get()
-        contributors = contributors_text.strip() if contributors_text else ''
-        # Extracting Version
-        version_text = response.xpath('//span[contains(text(), "Version")]/following-sibling::text()').get()
-        version = version_text.strip() if version_text else ''
-        
-        # Extracting Created
-        created_text = response.xpath('//span[contains(text(), "Created:")]/following-sibling::text()').get()
-        created = created_text.strip() if created_text else ''
-        
-        # Extracting Last Modified
-        last_modified_text = response.xpath('//span[contains(text(), "Last Modified:")]/following-sibling::text()').get()
-        last_modified = last_modified_text.strip() if last_modified_text else ''
-        yield {
-            'ID': id_,
-            "Contributors":contributors,
-            # 'First_Seen': first_seen,
-             'Version': version,
-             'Created': created,
-          'Last Modified': last_modified
-        }
+       # Extract the ID
+        id_info = ''.join(response.css('#card-id .h5.card-title + div *::text').getall()).strip()
 
+        # Extract the Contributors
+        contributors = ''.join(response.css('.row.card-data:nth-child(2) .h5.card-title + div *::text').getall()).strip()
+
+        # Extract the Version
+        version = ''.join(response.css('.row.card-data:nth-child(3) .h5.card-title + div *::text').getall()).strip()
+
+        # Extract the Created date
+        created = ''.join(response.css('.row.card-data:nth-child(4) .h5.card-title + div *::text').getall()).strip()
+
+        # Extract the Last Modified date
+        last_modified = ''.join(response.css('.row.card-data:nth-child(5) .h5.card-title + div *::text').getall()).strip()
+
+        yield {
+            'ID': id_info,
+            'Contributors': contributors,
+            'Version': version,
+            'Created': created,
+            'Last Modified': last_modified
+        }
 
 
 
