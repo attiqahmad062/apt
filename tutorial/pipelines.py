@@ -32,6 +32,7 @@ class TechniquesTable(scrapy.Item):
     Domain=scrapy.Field()
     References=scrapy.Field()
     SubId=scrapy.Field()
+    GroupId= scrapy.Field()
    
 class SoftwareTable(scrapy.Item):
     ID=scrapy.Field()
@@ -86,8 +87,8 @@ class MySQLPipeline:
         elif isinstance(item,TechniquesTable):
             try:
                 
-                sql = "INSERT INTO apt_group_techniques ( techniques_id, description, domain_name,reference,sub_id ) VALUES (%s, %s, %s,%s,%s)"
-                values = ( item.get('ID'), item.get('Use'), item.get('Domain'),item.get('References'),item.get('SubId'))
+                sql = "INSERT INTO apt_group_techniques (groups_id ,techniques_id, description, domain_name,reference,sub_id ) VALUES (%s, %s, %s,%s,%s,%s)"
+                values = (item.get('GroupId'),item.get('ID'), item.get('Use'), item.get('Domain'),item.get('References'),item.get('SubId'))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
             except mysql.connector.Error as err:
