@@ -62,13 +62,12 @@ class MITREAttackSpider(scrapy.Spider):
 
 
 
-       
-        techniqueTable = response.css('table.techniques-used tr')
-        for row in techniqueTable:
-            domain_data = row.css('td:nth-child(1)::text').get()
-            id_data = row.css('td:nth-child(2) a::text').get()
-            technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-            references = []
+        # techniqueTable = response.css('table.techniques-used tr')
+        # for row in techniqueTable:
+        #     domain_data = row.css('td:nth-child(1)::text').get()
+        #     id_data = row.css('td:nth-child(2) a::text').get()
+        #     technique_url = row.css('td:nth-child(2) a::attr(href)').get()
+        #     references = []
 
             if len(row.css('td')) >= 5:
                 sub_id_data = row.css('td:nth-child(3) a::text').get()
@@ -90,17 +89,16 @@ class MITREAttackSpider(scrapy.Spider):
                     if href not in references:
                         references.append(href)
 
-            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-            references_string = ' '.join(references)
-            yield TechniquesTable( {
-                'GroupId':id_,
-                'Domain': domain_data.strip() if domain_data else None,
-                'ID': id_data.strip() if id_data else None,
-                'SubId': sub_id_data.strip() if sub_id_data else None,
-                'Use': use_data if use_data else None,
-                "References": references_string
-            })
-            # if technique_url:
+        #     technique_url = response.urljoin(technique_url.strip()) if technique_url else None
+        #     references_string = ' '.join(references)
+        #     # yield TechniquesTable( {
+            #     'Domain': domain_data.strip() if domain_data else None,
+            #     'ID': id_data.strip() if id_data else None,
+            #     'SubId': sub_id_data.strip() if sub_id_data else None,
+            #     'Use': use_data if use_data else None,
+            #     "References": references_string
+            # })
+            # # if technique_url:
             #     yield response.follow(technique_url, self.parse_techniques)
             
 #         # Software Table:
