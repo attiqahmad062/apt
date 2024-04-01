@@ -62,12 +62,12 @@ class MITREAttackSpider(scrapy.Spider):
 
 
 
-        # techniqueTable = response.css('table.techniques-used tr')
-        # for row in techniqueTable:
-        #     domain_data = row.css('td:nth-child(1)::text').get()
-        #     id_data = row.css('td:nth-child(2) a::text').get()
-        #     technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-        #     references = []
+        techniqueTable = response.css('table.techniques-used tr')
+        for row in techniqueTable:
+            domain_data = row.css('td:nth-child(1)::text').get()
+            id_data = row.css('td:nth-child(2) a::text').get()
+            technique_url = row.css('td:nth-child(2) a::attr(href)').get()
+            references = []
 
             if len(row.css('td')) >= 5:
                 sub_id_data = row.css('td:nth-child(3) a::text').get()
