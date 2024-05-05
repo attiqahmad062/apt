@@ -18,16 +18,16 @@ class MITREAttackSpider(scrapy.Spider):
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-            yield GroupTable ({
-                'MittreName': column1_data.strip() if column1_data else None,
-                'Url': column1_url_absolute,
-                'GroupName': column2_data.strip() if column2_data else None,
-                'AssociatedGroups': column3_data.strip() if column3_data else None,
-                'Summary': column4_data.strip() if column4_data else None,
-            })
+            # yield GroupTable ({
+            #     'MittreName': column1_data.strip() if column1_data else None,
+            #     'Url': column1_url_absolute,
+            #     'GroupName': column2_data.strip() if column2_data else None,
+            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
+            #     'Summary': column4_data.strip() if column4_data else None,
+            # })
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
-              yield response.follow(column1_url_absolute, self.parse_group_page,column1_data)
+              yield response.follow(column1_url_absolute, self.parse_group_page)
     def parse_group_page(self, response):
         id_= response.xpath('//span[contains(text(), "ID:")]/following-sibling::text()').get().strip()
             # Extracting First Seen
@@ -56,44 +56,44 @@ class MITREAttackSpider(scrapy.Spider):
         #      'Created': created,
         #     'Last Modified': last_modified
         # }
-        # techniqueTable = response.css('table.techniques-used tr')
-        # for row in techniqueTable:
-        #     domain_data = row.css('td:nth-child(1)::text').get()
-        #     id_data = row.css('td:nth-child(2) a::text').get()
-        #     technique_url = row.css('td:nth-child(2) a::attr(href)').get()
-        #     references = []
+        techniqueTable = response.css('table.techniques-used tr')
+        for row in techniqueTable:
+            domain_data = row.css('td:nth-child(1)::text').get()
+            id_data = row.css('td:nth-child(2) a::text').get()
+            technique_url = row.css('td:nth-child(2) a::attr(href)').get()
+            references = []
 
-        #     if len(row.css('td')) >= 5:
-        #         sub_id_data = row.css('td:nth-child(3) a::text').get()
-        #         name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-        #         use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
-        #         references_tag = 'td:nth-child(5) a'
-        #     else:
-        #         sub_id_data = None
-        #         name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
-        #         use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-        #         references_tag = 'td:nth-child(4) a'
+            if len(row.css('td')) >= 5:
+                sub_id_data = row.css('td:nth-child(3) a::text').get()
+                name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+                use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
+                references_tag = 'td:nth-child(5) a'
+            else:
+                sub_id_data = None
+                name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+                use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
+                references_tag = 'td:nth-child(4) a'
 
-        #     # Extract references only from the current row
-        #     for link in row.css(references_tag):
-        #         href = link.css('::attr(href)').get()
-        #         text = link.css('::text').get()
+            # Extract references only from the current row
+            for link in row.css(references_tag):
+                href = link.css('::attr(href)').get()
+                text = link.css('::text').get()
 
-        #         if text and text.strip().startswith('[') and text.strip().endswith(']'):
-        #             if href not in references:
-        #                 references.append(href)
+                if text and text.strip().startswith('[') and text.strip().endswith(']'):
+                    if href not in references:
+                        references.append(href)
 
-        #     technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-        #     references_string = ' '.join(references)
-        #     # yield TechniquesTable( {
-            #     'Domain': domain_data.strip() if domain_data else None,
-            #     'ID': id_data.strip() if id_data else None,
-            #     'SubId': sub_id_data.strip() if sub_id_data else None,
-            #     'Use': use_data if use_data else None,
-            #     "References": references_string
-            # })
-            # # if technique_url:
-            #     yield response.follow(technique_url, self.parse_techniques)
+            technique_url = response.urljoin(technique_url.strip()) if technique_url else None
+            references_string = ' '.join(references)
+            yield ( {
+                'Domain': domain_data.strip() if domain_data else None,
+                'ID': id_data.strip() if id_data else None,
+                'SubId': sub_id_data.strip() if sub_id_data else None,
+                'Use': use_data if use_data else None,
+                "References": references_string
+            })
+            # if technique_url:
+                # yield response.follow(technique_url, self.parse_techniques)
             
 #         # Software Table:
 #         softwareTable = response.css('table.table-alternate tr')

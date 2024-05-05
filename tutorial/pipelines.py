@@ -2,11 +2,12 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-
+import re
 import scrapy
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import mysql.connector
+import scrapy.item
 
 # class TutorialPipeline:
 #     def process_item(self, item, spider):
@@ -62,6 +63,9 @@ class Detections(scrapy.Item):
     DataSource=scrapy.Field()
     DataComponent=scrapy.Field()
     Detects=scrapy.Field()
+# class AptReferences(scrapy.Item):
+#     ID=scrapy.Field()
+#     Url=scrapy.Field()
 class MySQLPipeline:
     def open_spider(self, spider):
         self.conn = mysql.connector.connect(**MYSQL_SETTINGS)
@@ -74,6 +78,7 @@ class MySQLPipeline:
         if isinstance(item, GroupTable): 
             try:
                 sql = "INSERT INTO apt_group (mitre_name, group_name, summary, associated_groups, group_url) VALUES (%s, %s, %s, %s, %s)"
+              
                 values = (item.get('MittreName'), item.get('GroupName'), item.get('Summary'), item.get('AssociatedGroups'), item.get('Url'))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
@@ -88,8 +93,15 @@ class MySQLPipeline:
                 
                 sql = "INSERT INTO apt_group_techniques ( techniques_id, description, domain_name,reference,sub_id ) VALUES (%s, %s, %s,%s,%s)"
                 values = ( item.get('ID'), item.get('Use'), item.get('Domain'),item.get('References'),item.get('SubId'))
+                sqlref="INSERT INTO apt_references (reference_id, reference_link) VALUES (%s, %s)"
+                # Using regex to find all URLs in the string
+                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('Reference'))
+                print(links)
+                for link in links:
+                 query = ("INSERT INTO apt_references (reference_url, technique_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE technique_id = VALUES(technique_id)")
+                 self.cursor.execute(query, (link,item.get('ID')))
                 self.cursor.execute(sql, values)
-                self.conn.commit()
+                self.conn.commit()   
             except mysql.connector.Error as err:
                 if err.errno == 1062:  # MySQL error code for duplicate entry
                     print("------------Duplicate entry found for the provided values in apt_group table.--------------")
@@ -100,6 +112,11 @@ class MySQLPipeline:
             try: 
                 sql = "INSERT INTO software_used ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
                 values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
+                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('Reference'))
+                print(links)
+                for link in links:
+                 query = ("INSERT INTO apt_references (reference_url, technique_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE technique_id = VALUES(technique_id), software_used = VALUES(software_used)")
+                 self.cursor.execute(query, (link,item.get('ID')))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
             except mysql.connector.Error as err:
@@ -111,7 +128,7 @@ class MySQLPipeline:
         elif isinstance(item,CompainsTable):
             try:
                 sql = "INSERT INTO CompainsTable ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
-                values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
+                values = ( item.get('ID'),  item.get('Name'), item.get('References',),item.get('Techniques'))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
             except mysql.connector.Error as err:
@@ -146,7 +163,7 @@ class MySQLPipeline:
                     print("An error occurred:", err)
         elif isinstance(item,Mitigations):
             try:    
-                sql = "INSERT INTO procedure_example ( id, name,description,reference) VALUES (%s, %s,%s,%s)"
+                sql = "INSERT INTO mitigations ( id, name,description,reference) VALUES (%s, %s,%s,%s)"
                 values = ( item.get('ID'), item.get('Name'),item.get('Description'),item.get('Reference'))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
@@ -163,4 +180,3 @@ class MySQLPipeline:
 # summary longtext 
 # created_date datetime 
 # modified_date
- 
