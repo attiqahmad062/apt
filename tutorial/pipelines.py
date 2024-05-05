@@ -18,7 +18,7 @@ MYSQL_SETTINGS = {
     'port': 3306,
     'database': 'etiapt',
     'user': 'root',
-    'password': '7777',#7777:1234
+    'password': '1234',#7777:1234
 }
 class GroupTable (scrapy.Item):
     MittreName=scrapy.Field()

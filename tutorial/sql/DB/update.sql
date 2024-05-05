@@ -177,16 +177,42 @@ COLLATE = utf8mb4_0900_ai_ci;
 CREATE TABLE IF NOT EXISTS `etiapt`.`apt_group_techniques` (
   `groups_id` VARCHAR(255) NULL DEFAULT NULL,
   `techniques_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin' NOT NULL,
-  `id` INT NULL,
   `description` LONGTEXT NULL DEFAULT NULL,
   `domain_name` VARCHAR(255) NULL DEFAULT NULL,
   `reference` VARCHAR(255) NULL DEFAULT NULL,
   `sub_id` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`techniques_id`),
   INDEX `FKmojo8d3wqerr5iv219205mh8d` (`techniques_id` ASC) VISIBLE,
-  INDEX `FKqiufy5mk9w015gk82sfcd2ea4` (`groups_id` ASC) VISIBLE,
-  PRIMARY KEY (`techniques_id`))
+  INDEX `FKqiufy5mk9w015gk82sfcd2ea4` (`groups_id` ASC) VISIBLE)
 ENGINE = InnoDB
-AUTO_INCREMENT = 44418
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `etiapt`.`software_used`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `etiapt`.`software_used` (
+  `software_Id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `reference` VARCHAR(255) NULL DEFAULT NULL,
+  `techniques` LONGTEXT NULL DEFAULT NULL,
+  PRIMARY KEY (`software_Id`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE = utf8mb4_0900_ai_ci;
+
+
+-- -----------------------------------------------------
+-- Table `etiapt`.`procedure_example`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `etiapt`.`procedure_example` (
+  `procedure_eample_id` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(255) NULL DEFAULT NULL,
+  `description` VARCHAR(255) NULL DEFAULT NULL,
+  `reference` VARCHAR(255) NULL DEFAULT NULL,
+  PRIMARY KEY (`procedure_eample_id`))
+ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
@@ -195,14 +221,26 @@ COLLATE = utf8mb4_0900_ai_ci;
 -- Table `etiapt`.`apt_references`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `etiapt`.`apt_references` (
-  `reference_id` INT NOT NULL AUTO_INCREMENT,
+  `reference_id` INT NOT NULL,
   `reference_link` VARCHAR(255) NULL DEFAULT NULL,
   `apt_group_techniques_techniques_id` VARCHAR(255) CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_bin' NOT NULL,
-  PRIMARY KEY (`reference_id`, `apt_group_techniques_techniques_id`),
+  `software_used_software_Id` VARCHAR(255) NOT NULL,
+  `procedure_example_procedure_eample_id` VARCHAR(255) NOT NULL,
+  PRIMARY KEY (`reference_id`, `apt_group_techniques_techniques_id`, `software_used_software_Id`, `procedure_example_procedure_eample_id`),
   INDEX `fk_apt_references_apt_group_techniques1_idx` (`apt_group_techniques_techniques_id` ASC) VISIBLE,
+  INDEX `fk_apt_references_software_used1_idx` (`software_used_software_Id` ASC) VISIBLE,
+  INDEX `fk_apt_references_procedure_example1_idx` (`procedure_example_procedure_eample_id` ASC) VISIBLE,
   CONSTRAINT `fk_apt_references_apt_group_techniques1`
     FOREIGN KEY (`apt_group_techniques_techniques_id`)
-    REFERENCES `etiapt`.`apt_group_techniques` (`techniques_id`)
+    REFERENCES `etiapt`.`apt_group_techniques` (`techniques_id`),
+  CONSTRAINT `fk_apt_references_software_used1`
+    FOREIGN KEY (`software_used_software_Id`)
+    REFERENCES `etiapt`.`software_used` (`software_Id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_apt_references_procedure_example1`
+    FOREIGN KEY (`procedure_example_procedure_eample_id`)
+    REFERENCES `etiapt`.`procedure_example` (`procedure_eample_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -293,20 +331,6 @@ COLLATE = utf8mb4_0900_ai_ci;
 
 
 -- -----------------------------------------------------
--- Table `etiapt`.`procedure_example`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `etiapt`.`procedure_example` (
-  `id` VARCHAR(255) NOT NULL,
-  `name` VARCHAR(255) NULL DEFAULT NULL,
-  `description` VARCHAR(255) NULL DEFAULT NULL,
-  `reference` VARCHAR(255) NULL DEFAULT NULL,
-  PRIMARY KEY (`id`))
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
 -- Table `etiapt`.`user_preference`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `etiapt`.`user_preference` (
@@ -371,20 +395,6 @@ CREATE TABLE IF NOT EXISTS `etiapt`.`sector_preference` (
     REFERENCES `etiapt`.`user_preference` (`id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 628
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
-
-
--- -----------------------------------------------------
--- Table `etiapt`.`software_used`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `etiapt`.`software_used` (
-  `Id` VARCHAR(255) NOT NULL,
-  `name` VARCHAR(255) NULL DEFAULT NULL,
-  `reference` VARCHAR(255) NULL DEFAULT NULL,
-  `techniques` LONGTEXT NULL DEFAULT NULL,
-  PRIMARY KEY (`Id`))
-ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
 
