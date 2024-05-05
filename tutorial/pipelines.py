@@ -18,7 +18,7 @@ MYSQL_SETTINGS = {
     'port': 3306,
     'database': 'etiapt',
     'user': 'root',
-    'password': '1234',#7777:1234
+    'password': '7777',#7777:1234
 }
 class GroupTable (scrapy.Item):
     MittreName=scrapy.Field()
@@ -113,19 +113,19 @@ class MySQLPipeline:
                     print("An error occurred:", err)
         elif isinstance(item,SoftwareTable):
             try: 
-                sql = "INSERT INTO software_used ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
+                sql = "INSERT INTO software_used( id, name,techniques ) VALUES ( %s, %s,%s)"
                 values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
-                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('Reference'))
+                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('References'))
               
                 print(links)   
                 for link in links:
-                 technique=item.get('ID')
-                 query = ("INSERT INTO apt_references (reference_url, apt_group_techniques_techniques_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE apt_group_techniques_techniques_id = VALUES(technique)")
-                 self.cursor.execute(query, (link,item.get('ID')))
+                 software_id=item.get('ID')
+                 query = ("INSERT INTO apt_references (reference_link,software_used_software_Id) VALUES (%s, %s)")
+                 self.cursor.execute(query, (link,software_id))
                 self.cursor.execute(sql, values)
                 self.conn.commit()
             except mysql.connector.Error as err:
-                if err.errno == 1062:  # MySQL error code for duplicate entry
+                if err.errno == 1062:# MySQL error code for duplicate entry
                     print("------------Duplicate entry found for the provided values in apt_group table.--------------")
                 else:
                     print("--------------An error occurred:-----------------", err)
