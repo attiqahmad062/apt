@@ -91,15 +91,18 @@ class MySQLPipeline:
         elif isinstance(item,TechniquesTable):
             try:
                 
-                sql = "INSERT INTO apt_group_techniques ( techniques_id, description, domain_name,reference,sub_id ) VALUES (%s, %s, %s,%s,%s)"
-                values = ( item.get('ID'), item.get('Use'), item.get('Domain'),item.get('References'),item.get('SubId'))
-                sqlref="INSERT INTO apt_references (reference_id, reference_link) VALUES (%s, %s)"
+                sql = "INSERT INTO apt_group_techniques ( techniques_id, description, domain_name,sub_id ) VALUES (%s, %s,%s,%s)"
+                values = ( item.get('ID'), item.get('Use'), item.get('Domain'),item.get('SubId'))
+                # sqlref="INSERT INTO apt_references (reference_id, reference_link) VALUES (%s, %s)"
                 # Using regex to find all URLs in the string
-                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('Reference'))
+                input_string=item.get('References')
+                technique=item.get('ID')
+                links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', input_string)
                 print(links)
                 for link in links:
-                 query = ("INSERT INTO apt_references (reference_url, technique_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE technique_id = VALUES(technique_id)")
-                 self.cursor.execute(query, (link,item.get('ID')))
+                 
+                 query = ("INSERT INTO apt_references (reference_link, apt_group_techniques_techniques_id) VALUES (%s,%s) ")
+                 self.cursor.execute(query, (link,technique))
                 self.cursor.execute(sql, values)
                 self.conn.commit()   
             except mysql.connector.Error as err:
@@ -113,9 +116,11 @@ class MySQLPipeline:
                 sql = "INSERT INTO software_used ( id, name, reference,techniques ) VALUES (%s, %s, %s,%s)"
                 values = ( item.get('ID'), item.get('Name'), item.get('References',),item.get('Techniques'))
                 links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', item.get('Reference'))
-                print(links)
+              
+                print(links)   
                 for link in links:
-                 query = ("INSERT INTO apt_references (reference_url, technique_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE technique_id = VALUES(technique_id), software_used = VALUES(software_used)")
+                 technique=item.get('ID')
+                 query = ("INSERT INTO apt_references (reference_url, apt_group_techniques_techniques_id) "  "VALUES (%s, %s) " "ON DUPLICATE KEY UPDATE apt_group_techniques_techniques_id = VALUES(technique)")
                  self.cursor.execute(query, (link,item.get('ID')))
                 self.cursor.execute(sql, values)
                 self.conn.commit()

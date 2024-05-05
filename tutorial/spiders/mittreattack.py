@@ -85,7 +85,7 @@ class MITREAttackSpider(scrapy.Spider):
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             references_string = ' '.join(references)
-            yield ( {
+            yield TechniquesTable( {
                 'Domain': domain_data.strip() if domain_data else None,
                 'ID': id_data.strip() if id_data else None,
                 'SubId': sub_id_data.strip() if sub_id_data else None,
