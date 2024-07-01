@@ -87,7 +87,7 @@ class MySQLPipeline:
                     print("------------Duplicate entry found for the provided values in apt_group table.--------------")
                 else:
                     print("--------------An error occurred:-----------------", err)
-                    print("An error occurred:", err)
+                    print("An error occurred :", err)
         elif isinstance(item,TechniquesTable):
             try:
                 
