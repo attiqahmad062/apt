@@ -98,11 +98,14 @@ class MySQLPipeline:
                 input_string=item.get('References')
                 technique=item.get('ID')
                 links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', input_string)
-                print(links)
+                print("linkes are :",technique)
                 for link in links:
-                 
-                 query = ("INSERT INTO apt_references (reference_link, apt_group_techniques_techniques_id) VALUES (%s,%s) ")
-                 self.cursor.execute(query, (link,technique))
+                    query = ("INSERT INTO apt_references (reference_link, apt_group_techniques_techniques_id) VALUES (%s,%s) ")
+                    try:
+                        self.cursor.execute(query, (link,technique))
+                        print("added",link,technique)
+                    except:
+                        print("Failed")
                 self.cursor.execute(sql, values)
                 self.conn.commit()   
             except mysql.connector.Error as err:

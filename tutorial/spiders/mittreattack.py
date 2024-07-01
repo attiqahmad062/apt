@@ -18,13 +18,13 @@ class MITREAttackSpider(scrapy.Spider):
             column1_url = row.css('td:nth-child(1) a::attr(href)').extract_first()
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
-            # yield GroupTable ({
-            #     'MittreName': column1_data.strip() if column1_data else None,
-            #     'Url': column1_url_absolute,
-            #     'GroupName': column2_data.strip() if column2_data else None,
-            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
-            #     'Summary': column4_data.strip() if column4_data else None,
-            # })
+            yield GroupTable ({
+                'MittreName': column1_data.strip() if column1_data else None,
+                'Url': column1_url_absolute,
+                'GroupName': column2_data.strip() if column2_data else None,
+                'AssociatedGroups': column3_data.strip() if column3_data else None,
+                'Summary': column4_data.strip() if column4_data else None,
+            })
             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
@@ -93,29 +93,28 @@ class MITREAttackSpider(scrapy.Spider):
                 "References": references_string
             })
             # if technique_url:
-                # yield response.follow(technique_url, self.parse_techniques)
-            
+            #     yield response.follow(technique_url, self.parse_techniques)
 #         # Software Table:
-        softwareTable = response.css('table.table-alternate tr')
-        for index, row in enumerate(softwareTable, start=1):
-            # Extracting data from each column in the row
-            id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
-            name_data = ' '.join(row.css('td:nth-child(2) *::text').getall()).strip()
-            # references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
-            references_data = row.css('td:nth-child(3) span sup a::attr(href)').get()
-            # Extracting techniques
-            techniques_data = []
-            techniques_nodes = row.css('td:nth-child(4) *::text').getall()
-            for node in techniques_nodes:
-                techniques_data.append(node.strip())
-            # Check if ID starts with 'S'
-            if id_data and id_data.startswith('S') and id_data[1:].isdigit():
-                yield SoftwareTable( {
-                    'ID': id_data if id_data else None,
-                    'Name': name_data if name_data else None,
-                    'References': references_data if references_data else None,
-                    'Techniques': ' '.join(techniques_data) if techniques_data else None,
-                } )
+        # softwareTable = response.css('table.table-alternate tr')
+        # for index, row in enumerate(softwareTable, start=1):
+        #     # Extracting data from each column in the row
+        #     id_data = ' '.join(row.css('td:nth-child(1) *::text').getall()).strip()
+        #     name_data = ' '.join(row.css('td:nth-child(2) *::text').getall()).strip()
+        #     # references_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
+        #     references_data = row.css('td:nth-child(3) span sup a::attr(href)').get()
+        #     # Extracting techniques
+        #     techniques_data = []
+        #     techniques_nodes = row.css('td:nth-child(4) *::text').getall()
+        #     for node in techniques_nodes:
+        #         techniques_data.append(node.strip())
+        #     # Check if ID starts with 'S'
+        #     if id_data and id_data.startswith('S') and id_data[1:].isdigit():
+        #         yield SoftwareTable( {
+        #             'ID': id_data if id_data else None,
+        #             'Name': name_data if name_data else None,
+        #             'References': references_data if references_data else None,
+        #             'Techniques': ' '.join(techniques_data) if techniques_data else None,
+        #         } )
 #         # campaigns 
 #         if response.css('h2#campaigns'):
 #             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
