@@ -101,8 +101,9 @@ class MySQLPipeline:
                 print("linkes are :",technique)
                 for link in links:
                     query = ("INSERT INTO apt_references (reference_link, apt_group_techniques_techniques_id) VALUES (%s,%s) ")
+                    ref_values=(link,technique)
                     try:
-                        self.cursor.execute(query, (link,technique))
+                        self.cursor.execute(query, ref_values)
                         print("added",link,technique)
                     except:
                         print("Failed")
