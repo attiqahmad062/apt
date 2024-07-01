@@ -84,7 +84,7 @@ class MySQLPipeline:
                 self.conn.commit()
             except mysql.connector.Error as err:
                 if err.errno == 1062:  # MySQL error code for duplicate entry
-                    print("------------Duplicate entry found for the provided values in apt_group table.--------------")
+                    print("------------Duplicate  entry found for the provided values in apt_group table.--------------")
                 else:
                     print("--------------An error occurred:-----------------", err)
                     print("An error occurred :", err)
