@@ -28,12 +28,18 @@ ITEM_PIPELINES = {
     'tutorial.pipelines.MySQLPipeline': 300,
 }
 
+ELASTICSEARCH_SETTINGS = {
+    'hosts': ['http://localhost:9200'],
+    'timeout': 30,  # Increase the timeout value
+}
+ELASTICSEARCH_TIMEOUT = 30  # Increase timeout (in seconds)
+ELASTICSEARCH_RETRY_ON_TIMEOUT = True  # Retry on timeout
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "tutorial (+http://www.yourdomain.com)"
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
-
+ 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
 
