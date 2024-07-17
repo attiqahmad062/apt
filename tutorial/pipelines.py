@@ -7,11 +7,12 @@
 # # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 # import mysql.connector
-# import scrapy.item
+# import scrapy.itemedewd
 # from itemadapter import ItemAdapter
 # import mysql.connector
 
 # MYSQL_SETTINGS = {
+
 #     'host': 'localhost',
 #     'port': 3306,
 #     'database': 'etiapt',
