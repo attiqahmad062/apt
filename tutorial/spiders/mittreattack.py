@@ -1,7 +1,7 @@
 import scrapy
 import re
 
-from tutorial.pipelines import GroupTable, TechniquesTable,SoftwareTable,CompainsTable,SubTechniques,ProcedureExamples,Mitigations,Detections
+from tutorial.pipelines import GroupTable, TechniquesTable,SoftwareTable,CampaignsTable,SubTechniques,ProcedureExamples,Mitigations ,Detections
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
