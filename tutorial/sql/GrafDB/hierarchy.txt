@@ -1,0 +1,141 @@
+Class hierarchy:
+:apt_group
+    :apt_technique
+        :procedure_examples
+        :mitigations
+        :detections
+    :apt_software
+        :procedure_examples
+        :mitigations
+        :detections
+    :apt_campaigns
+        :apt_technique
+        :apt_software
+    :references
+
+
+
+Object Properties:
+
+:ObjectProperty :hasAptTechnique
+    Domain: :apt_group
+    Range: :apt_technique
+    Characteristics: Asymmetric
+
+:ObjectProperty :hasProcedureExamples
+    Domain: :apt_technique
+    Range: :procedure_examples
+    Characteristics: Asymmetric
+
+:ObjectProperty :hasMitigations
+    Domain: :apt_technique
+    Range: :mitigations
+    Characteristics: Asymmetric
+
+:ObjectProperty :hasDetections
+    Domain: :apt_technique
+    Range: :detections
+    Characteristics: Symmetric
+
+:ObjectProperty :hasReferences
+    Domain: :apt_technique, :procedure_examples, :mitigations, :detections, :apt_software, :apt_campaigns
+    Range: :references
+    Characteristics: Asymmetric	, Transitive
+
+:ObjectProperty :hasAptSoftware
+    Domain: :apt_group,apt_technique,apt_campaigns
+    Range: :apt_software
+    Characteristics: Asymmetric
+
+:ObjectProperty :hasAptTechniqueForCampaign
+    Domain: :apt_campaigns
+    Range: :apt_technique
+    Characteristics: Asymmetric
+
+:ObjectProperty :hasAptSoftwareForCampaign
+    Domain: :apt_campaigns
+    Range: :apt_software
+    Characteristics: Asymmetric
+
+
+
+
+
+
+Datatype Properties:
+
+
+
+
+
+:DatatypeProperty :groupName
+    Domain: :apt_group
+    Range: xsd:string
+
+:DatatypeProperty :groupId
+    Domain: :apt_group
+    Range: xsd:string
+
+:DatatypeProperty :description
+    Domain: :apt_group, :apt_technique, :procedure_examples, :mitigations, :detections, :apt_software, :apt_campaigns
+    Range: xsd:string
+
+:DatatypeProperty :techniqueName
+    Domain: :apt_technique
+    Range: xsd:string
+
+:DatatypeProperty :techniqueId
+    Domain: :apt_technique
+    Range: xsd:string
+
+:DatatypeProperty :exampleName
+    Domain: :procedure_examples
+    Range: xsd:string
+
+:DatatypeProperty :exampleId
+    Domain: :procedure_examples
+    Range: xsd:string
+
+:DatatypeProperty :mitigationName
+    Domain: :mitigations
+    Range: xsd:string
+
+:DatatypeProperty :mitigationId
+    Domain: :mitigations
+    Range: xsd:string
+
+:DatatypeProperty :detectionName
+    Domain: :detections
+    Range: xsd:string
+
+:DatatypeProperty :detectionId
+    Domain: :detections
+    Range: xsd:string
+
+:DatatypeProperty :softwareName
+    Domain: :apt_software
+    Range: xsd:string
+
+:DatatypeProperty :softwareId
+    Domain: :apt_software
+    Range: xsd:string
+
+:DatatypeProperty :campaignName
+    Domain: :apt_campaigns
+    Range: xsd:string
+
+:DatatypeProperty :campaignId
+    Domain: :apt_campaigns
+    Range: xsd:string
+
+:DatatypeProperty :referenceName
+    Domain: :references
+    Range: xsd:string
+
+:DatatypeProperty :referenceId
+    Domain: :references
+    Range: xsd:string
+
+:DatatypeProperty :url
+    Domain: :references
+    Range: xsd:string
