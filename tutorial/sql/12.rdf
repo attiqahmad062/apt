@@ -1,0 +1,701 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30/"
+     xml:base="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topObjectProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_. -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_.">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:SymmetricProperty_. -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:SymmetricProperty_.">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty,_owl:TransitiveProperty_. -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty,_owl:TransitiveProperty_.">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_campaigns_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_campaigns_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group,_:apt_technique,_:apt_campaigns_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group,_:apt_technique,_:apt_campaigns_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique,_:procedure_examples,_:mitigations,_:detections,_:apt_software,_:apt_campaigns_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique,_:procedure_examples,_:mitigations,_:detections,_:apt_software,_:apt_campaigns_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_software_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_software_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_technique_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_technique_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_;"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:detections_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:detections_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:mitigations_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:mitigations_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:procedure_examples_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:procedure_examples_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:references_; -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:references_;">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_;"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:description -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:description">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueId">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueName">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:url -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:url">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_campaigns -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_campaigns">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_group -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_group">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_software -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_software">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_technique -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_technique">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:detections -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:detections">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:mitigations -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:mitigations">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:procedure_examples -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:procedure_examples">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleName"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:references -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:references">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:url"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_group,_:apt_technique,_:procedure_examples,_:mitigations,_:detections,_:apt_software,_:apt_campaigns -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Domain:_:apt_group,_:apt_technique,_:procedure_examples,_:mitigations,_:detections,_:apt_software,_:apt_campaigns">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:description"/>
+        <owl:propertyDisjointWith rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#Range:_xsd:string">
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:description"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueId"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueName"/>
+        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:url"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_group"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_group -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_group"/>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_group"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_group"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:detections -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:detections">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:mitigations -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:mitigations">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:procedure_examples -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:procedure_examples">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:references -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:references">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:detections"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:mitigations"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:procedure_examples"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_campaigns"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_software"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:apt_technique"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:references"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:detections"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:mitigations"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:procedure_examples"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:references"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftwareForCampaign_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptSoftware_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechniqueForCampaign_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasAptTechnique_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasDetections_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasMitigations_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasProcedureExamples_rdf:type_owl:ObjectProperty_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:hasReferences_rdf:type_owl:ObjectProperty_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_campaigns_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_software_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_campaigns_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_technique_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group,_:apt_technique,_:apt_campaigns_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_software_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_group_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:apt_technique_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:mitigations_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:procedure_examples_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:SymmetricProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:detections_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdf:type_owl:AsymmetricProperty,_owl:TransitiveProperty_."/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:domain_:apt_technique,_:procedure_examples,_:mitigations,_:detections,_:apt_software,_:apt_campaigns_;"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#rdfs:range_:references_;"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointProperties"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:campaignName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:description"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:detectionName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:exampleName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:groupName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:mitigationName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:referenceName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:softwareName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueId"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:techniqueName"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/husna/ontologies/2024/6/untitled-ontology-30#:DatatypeProperty_:url"/>
+        </owl:members>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
