@@ -145,7 +145,6 @@
 
 #         return item
 
-
 import re
 import scrapy
 from itemadapter import ItemAdapter
@@ -153,12 +152,12 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST, URLENCODED
 
 GRAPHDB_SETTINGS = {
     'endpoint': 'http://localhost:7200/repositories/etiapt/statements',
-    'prefix': 'http://example.org/graph'
+    'prefix': 'https://attack.mitre.org/'
 }
 
 class GroupTable(scrapy.Item):
     MittreName = scrapy.Field()
-    GroupName = scrapy.Field()
+    GroupName = scrapy.Field() 
     Summary = scrapy.Field()
     AssociatedGroups = scrapy.Field()
     Url = scrapy.Field()
@@ -170,6 +169,7 @@ class TechniquesTable(scrapy.Item):
     References = scrapy.Field()
     SubId = scrapy.Field()
     GroupId = scrapy.Field()
+    Name = scrapy.Field()
 
 class SoftwareTable(scrapy.Item):
     ID = scrapy.Field()
@@ -220,9 +220,10 @@ class MySQLPipeline:
                 query = self.create_group_table_query(item)
             elif isinstance(item, TechniquesTable):
                 query = self.create_techniques_table_query(item)
+                print(query)
             elif isinstance(item, SoftwareTable):
                 query = self.create_software_table_query(item)
-            elif isinstance(item, CompainsTable):
+            elif isinstance(item, CampaignsTable):
                 query = self.create_compains_table_query(item)
             elif isinstance(item, SubTechniques):
                 query = self.create_sub_techniques_query(item)
@@ -253,7 +254,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('GroupName')} a ex:GroupTable ;
+                ex:{item.get('GroupName')} a ex:groups ;
                     ex:mitreName "{item.get('MittreName')}" ;
                     ex:summary "{item.get('Summary')}" ;
                     ex:associatedGroups "{item.get('AssociatedGroups')}" ;
@@ -265,18 +266,29 @@ class MySQLPipeline:
             return ""
 
     def create_techniques_table_query(self, item):
+        def escape_string(value):
+            if value is None:
+                return ""
+            return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
             technique_id = item.get('ID')
             refs = self.create_references(item.get('References'), technique_id, 'technique')
-
+#   ID = scrapy.Field()
+    # Use = scrapy.Field()
+    # Domain = scrapy.Field()
+    # References = scrapy.Field()
+    # SubId = scrapy.Field()
+    # GroupId = scrapy.Field()
+            technique_id = escape_string(item.get('ID'))
+            technique_name = escape_string(item.get('Name'))
+            description = escape_string(item.get('Use'))
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{technique_id} a ex:TechniquesTable ;
-                    ex:use "{item.get('Use')}" ;
-                    ex:domain "{item.get('Domain')}" ;
-                    ex:subId "{item.get('SubId')}" .
-                {refs}
+             ex:{technique_id} a ex:techniques ;
+            ex:techniqueName "{technique_name}" ;
+            ex:description "{description}" ;
+                  
             }}
             """
         except Exception as e:
@@ -291,7 +303,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{software_id} a ex:SoftwareTable ;
+                ex:{software_id} a ex:softwares ;
                     ex:name "{item.get('Name')}" ;
                     ex:techniques "{item.get('Techniques')}" .
                 {refs}
@@ -306,7 +318,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:CompainsTable ;
+                ex:{item.get('ID')} a ex:campaigns ;
                     ex:name "{item.get('Name')}" ;
                     ex:references "{item.get('References')}" ;
                     ex:techniques "{item.get('Techniques')}" .
@@ -321,7 +333,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:SubTechniques ;
+                ex:{item.get('ID')} a ex:subtechniques ;
                     ex:name "{item.get('Name')}" .
             }}
             """
@@ -334,7 +346,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:ProcedureExamples ;
+                ex:{item.get('ID')} a ex:procedures ;
                     ex:name "{item.get('Name')}" ;
                     ex:description "{item.get('Description')}" .
             }}
@@ -348,7 +360,7 @@ class MySQLPipeline:
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:Mitigations ;
+                ex:{item.get('ID')} a ex:mitigations ;
                     ex:mitigation "{item.get('Mitigation')}" ;
                     ex:description "{item.get('Description')}" .
             }}

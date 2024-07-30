@@ -26,8 +26,8 @@ class MITREAttackSpider(scrapy.Spider):
                 'Summary': column4_data.strip() if column4_data else None,
             })
             # Follow the URL to the group's page and parse the table data
-            # if column1_url_absolute:
-            #   yield response.follow(column1_url_absolute, self.parse_group_page)
+            if column1_url_absolute:
+              yield response.follow(column1_url_absolute, self.parse_group_page)
     def parse_group_page(self, response):
         id_= response.xpath('//span[contains(text(), "ID:")]/following-sibling::text()').get().strip()
             # Extracting First Seen
@@ -87,13 +87,14 @@ class MITREAttackSpider(scrapy.Spider):
             references_string = ' '.join(references)
             yield TechniquesTable( {
                 'Domain': domain_data.strip() if domain_data else None,
+                'Name': name_data.strip() if name_data else None,
                 'ID': id_data.strip() if id_data else None,
                 'SubId': sub_id_data.strip() if sub_id_data else None,
                 'Use': use_data if use_data else None,
                 "References": references_string
             })
-            if technique_url:
-                yield response.follow(technique_url, self.parse_techniques)
+            # if technique_url:
+            #     yield response.follow(technique_url, self.parse_techniques)
         # Software Table:
         softwareTable = response.css('table.table-alternate tr')
         for index, row in enumerate(softwareTable, start=1):
@@ -116,16 +117,16 @@ class MITREAttackSpider(scrapy.Spider):
                     'Techniques': ' '.join(techniques_data) if techniques_data else None,
                 } )
 #         # campaigns 
-#         if response.css('h2#campaigns'):
-#             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
-#                 yield  CompainsTable({
-#                     'ID': row.css('td:nth-child(1) a::text').get(),
-#                     'Name': row.css('td:nth-child(2) a::text').get(),
-#                     'FirstSeen': row.css('td:nth-child(3) *::text').get(),
-#                     'LastSeen': row.css('td:nth-child(4) *::text').get(),
-#                     'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-#                      'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
-#                 })
+        if response.css('h2#campaigns'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                yield  CampaignsTable({
+                    'ID': row.css('td:nth-child(1) a::text').get(),
+                    'Name': row.css('td:nth-child(2) a::text').get(),
+                    'FirstSeen': row.css('td:nth-child(3) *::text').get(),
+                    'LastSeen': row.css('td:nth-child(4) *::text').get(),
+                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                })
 #         #associated groups (aliasDescription)
 #         if response.css('h2#aliasDescription'):
 #             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
@@ -145,52 +146,52 @@ class MITREAttackSpider(scrapy.Spider):
 # #             # })
             
 # #         # procedure examples
-# #         if response.css('h2#examples'):
-# #                 rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
-# #                 for row in rows:
-# #                         # Extract the data from each cell in the row
-# #                         id = row.css('td:nth-child(1) a::text').get()
-# #                         name = row.css('td:nth-child(2) a::text').get()
-# #                         description = row.css('td:nth-child(3) p::text').get()
+        if response.css('h2#examples'):
+                rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
+                for row in rows:
+                        # Extract the data from each cell in the row
+                        id = row.css('td:nth-child(1) a::text').get()
+                        name = row.css('td:nth-child(2) a::text').get()
+                        description = row.css('td:nth-child(3) p::text').get()
                         
                     
-# #                         yield ProcedureExamples( {
-# #                             'ID': id,
-# #                             'Name': name,
-# #                             'Description': description
-# #                     })
+                        yield ProcedureExamples( {
+                            'ID': id,
+                            'Name': name,
+                            'Description': description
+                    })
 # #         #mitigations
-# #         # if response.css('h2#mitigations'):
-# #         #     rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
-# #         #     for row in rows: 
-# #         #         id = row.css('td:nth-child(1) a::text').get()
-# #         #         mitigation = row.css('td:nth-child(2) a::text').get()
-# #         #         description = row.css('td:nth-child(3) p::text').get()
-# #         #         mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
-# #         #         technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-# #         #         if id.__contains__('M'):
+        if response.css('h2#mitigations'):
+            rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
+            for row in rows: 
+                id = row.css('td:nth-child(1) a::text').get()
+                mitigation = row.css('td:nth-child(2) a::text').get()
+                description = row.css('td:nth-child(3) p::text').get()
+                mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
+                technique_url=response.urljoin(technique_url.strip()) if technique_url else None
+                if id.__contains__('M'):
                
-# #         #            yield Mitigations({
-# #         #             'ID': id,
-# #         #             'Mitigation': mitigation,
-# #         #             'Description': description
-# #         #         })
+                   yield Mitigations({
+                    'ID': id,
+                    'Mitigation': mitigation,
+                    'Description': description
+                })
 # #         #detections
-# #         # if response.css('h2#detection'):
-# #         #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
-# #         #      for row in rows:
-# #         #         # Extract the data from each cell in the row
-# #         #         id = row.css('td:nth-child(1) a::text').get()
-# #         #         data_source = row.css('td:nth-child(2) a::text').get()
-# #         #         data_component = row.css('td:nth-child(3) a::text').get()
-# #         #         detects = row.css('td:nth-child(4) p::text').get()
-# #         #         # Yield the extracted   data
-# #         #         yield   {
-# #         #             'ID': id,
-# #         #             'DataSource': data_source,
-# #         #             'DataComponent': data_component,
-# #         #             'Detects': detects
-# #         #         }
+        if response.css('h2#detection'):
+             rows = response.css('table.table.datasources-table.table-bordered tbody tr')
+             for row in rows:
+                # Extract the data from each cell in the row
+                id = row.css('td:nth-child(1) a::text').get()
+                data_source = row.css('td:nth-child(2) a::text').get()
+                data_component = row.css('td:nth-child(3) a::text').get()
+                detects = row.css('td:nth-child(4) p::text').get()
+                # Yield the extracted   data
+                yield   {
+                    'ID': id,
+                    'DataSource': data_source,
+                    'DataComponent': data_component,
+                    'Detects': detects
+                }
 # # #
 # # # 
         
