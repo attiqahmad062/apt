@@ -276,20 +276,20 @@ class MySQLPipeline:
 #   ID = scrapy.Field()
     # Use = scrapy.Field()
     # Domain = scrapy.Field()
-    # References = scrapy.Field()
+    # References = scrapy.Field() 
     # SubId = scrapy.Field()
     # GroupId = scrapy.Field()
             technique_id = escape_string(item.get('ID'))
             technique_name = escape_string(item.get('Name'))
             description = escape_string(item.get('Use'))
+            # ex:description "{description}" ;   
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
              ex:{technique_id} a ex:techniques ;
             ex:techniqueName "{technique_name}" ;
-            ex:description "{description}" ;
-                  
-            }}
+            ex:description "{description}" .
+            }} 
             """
         except Exception as e:
             print(f"An error occurred while creating TechniquesTable query: {e}")
@@ -306,7 +306,7 @@ class MySQLPipeline:
                 ex:{software_id} a ex:softwares ;
                     ex:name "{item.get('Name')}" ;
                     ex:techniques "{item.get('Techniques')}" .
-                {refs}
+                {refs} 
             }}
             """
         except Exception as e:

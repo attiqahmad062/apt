@@ -93,8 +93,8 @@ class MITREAttackSpider(scrapy.Spider):
                 'Use': use_data if use_data else None,
                 "References": references_string
             })
-            # if technique_url:
-            #     yield response.follow(technique_url, self.parse_techniques)
+            if technique_url:
+                yield response.follow(technique_url, self.parse_techniques)
         # Software Table:
         softwareTable = response.css('table.table-alternate tr')
         for index, row in enumerate(softwareTable, start=1):
@@ -128,22 +128,22 @@ class MITREAttackSpider(scrapy.Spider):
                      'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
                 })
 #         #associated groups (aliasDescription)
-#         if response.css('h2#aliasDescription'):
-#             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
-#                 name = row.xpath('./td[1]/text()').get()
-#                 cleaned_name = re.sub(r'\W+', '', name) if name else name
-#                 description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
-#                 yield {
-#                     'Name': cleaned_name,
-#                     'Description': description
-#                 }
-# #      def parse_techniques(self, response):
-# #         #  subtechniques
-# #         for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
-# #             # yield SubTechniques( {
-# #             #     'ID': row.xpath('td[1]/a/text()').get(),
-# #             #     'Name': row.xpath('td[2]/a/text()').get(),
-# #             # })
+        if response.css('h2#aliasDescription'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
+                name = row.xpath('./td[1]/text()').get()
+                cleaned_name = re.sub(r'\W+', '', name) if name else name
+                description = row.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table/tbody/tr[1]/td[2]/p/span/sup/a/@href').get()
+                yield {
+                    'Name': cleaned_name,
+                    'Description': description
+                }
+    def parse_techniques(self, response):
+        #  subtechniques
+        for row in response.xpath('//div[@id="subtechniques-card-body"]//table//tbody/tr'):
+            yield SubTechniques( {
+                'ID': row.xpath('td[1]/a/text()').get(),
+                'Name': row.xpath('td[2]/a/text()').get(),
+            })
             
 # #         # procedure examples
         if response.css('h2#examples'):
@@ -192,6 +192,5 @@ class MITREAttackSpider(scrapy.Spider):
                     'DataComponent': data_component,
                     'Detects': detects
                 }
-# # #
-# # # 
+
         
