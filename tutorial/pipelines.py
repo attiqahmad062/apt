@@ -170,13 +170,11 @@ class TechniquesTable(scrapy.Item):
     SubId = scrapy.Field()
     GroupId = scrapy.Field()
     Name = scrapy.Field()
-
 class SoftwareTable(scrapy.Item):
     ID = scrapy.Field()
     Name = scrapy.Field()
     References = scrapy.Field()
     Techniques = scrapy.Field()
-
 class CampaignsTable(scrapy.Item):
     ID = scrapy.Field()
     Name = scrapy.Field()
@@ -204,16 +202,13 @@ class Detections(scrapy.Item):
     DataSource = scrapy.Field()
     DataComponent = scrapy.Field()
     Detects = scrapy.Field()
-
 class MySQLPipeline:
     def open_spider(self, spider):
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
         print("Connection to GraphDB established")
-
     def close_spider(self, spider):
         # GraphDB connection does not need explicit closing
         pass
-
     def process_item(self, item, spider):
         try:
             if isinstance(item, GroupTable):
@@ -232,14 +227,11 @@ class MySQLPipeline:
             elif isinstance(item, Mitigations):
                 query = self.create_mitigations_query(item)
             else:
-                return item
-            
+                return item   
             self.execute_sparql(query)
         except Exception as e:
             print(f"An error occurred while processing item: {e}")
-
         return item
-
     def execute_sparql(self, query):
         try:
             self.sparql.setQuery(query)
@@ -248,7 +240,6 @@ class MySQLPipeline:
             self.sparql.query()
         except Exception as e:
             print(f"An error occurred while executing SPARQL query: {e}")
-
     def create_group_table_query(self, item):
         try:
             return f"""
@@ -264,7 +255,6 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while creating GroupTable query: {e}")
             return ""
-
     def create_techniques_table_query(self, item):
         def escape_string(value):
             if value is None:
@@ -289,6 +279,7 @@ class MySQLPipeline:
              ex:{technique_id} a ex:techniques ;
             ex:techniqueName "{technique_name}" ;
             ex:description "{description}" .
+            {refs} 
             }} 
             """
         except Exception as e:
@@ -299,14 +290,13 @@ class MySQLPipeline:
         try:
             software_id = item.get('ID')
             refs = self.create_references(item.get('References'), software_id, 'software')
-
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{software_id} a ex:softwares ;
                     ex:name "{item.get('Name')}" ;
                     ex:techniques "{item.get('Techniques')}" .
-                {refs} 
+                  ex:referenceUrl "{refs} "
             }}
             """
         except Exception as e:
