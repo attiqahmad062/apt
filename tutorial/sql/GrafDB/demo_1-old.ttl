@@ -1,0 +1,285 @@
+@prefix : <http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/> .
+
+<http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5> rdf:type owl:Ontology .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#detections_implemented_technique
+:detections_implemented_technique rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#group_uses_software
+:group_uses_software rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#mitigations_implementedby_technique
+:mitigations_implementedby_technique rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#procedures_implementedby_technique
+:procedures_implementedby_technique rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#software_usedby_group
+:software_usedby_group rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implementedby_procedure
+:technique_implementedby_procedure rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_detections
+:technique_implements_detections rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_mitigations
+:technique_implements_mitigations rdf:type owl:ObjectProperty .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns_carriedby_groups
+:campaigns_carriedby_groups rdf:type owl:ObjectProperty ;
+                            rdfs:domain :campaigns ;
+                            rdfs:range :groups .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections_implementedby_technique
+:detections_implementedby_technique rdf:type owl:ObjectProperty ;
+                                    rdfs:domain :detections ;
+                                    rdfs:range :techniques .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_has_associatedgroup
+:group_has_associatedgroup rdf:type owl:ObjectProperty ,
+                                    owl:TransitiveProperty ;
+                           rdfs:domain :groups ;
+                           rdfs:range :associated_groups .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_ispartof_campains
+:group_ispartof_campains rdf:type owl:ObjectProperty ,
+                                  owl:TransitiveProperty ;
+                         rdfs:domain :groups ;
+                         rdfs:range :campaigns .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_software
+:group_uses_software rdf:type owl:ObjectProperty ;
+                     rdfs:domain :groups ;
+                     rdfs:range :softwares .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_technique
+:group_uses_technique rdf:type owl:ObjectProperty ,
+                               owl:TransitiveProperty ;
+                      rdfs:domain :groups ;
+                      rdfs:range :techniques .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations_implementedby_technique
+:mitigations_implementedby_technique rdf:type owl:ObjectProperty ,
+                                              owl:TransitiveProperty ;
+                                     rdfs:domain :mitigations ;
+                                     rdfs:range :techniques .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedure_implements_technique
+:procedure_implements_technique rdf:type owl:ObjectProperty ;
+                                rdfs:domain :procedures ;
+                                rdfs:range :techniques .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/software_usedby_group
+:software_usedby_group rdf:type owl:ObjectProperty ;
+                       rdfs:domain :softwares ;
+                       rdfs:range :groups .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_detections
+:technique_implements_detections rdf:type owl:ObjectProperty ,
+                                          owl:TransitiveProperty ;
+                                 rdfs:domain :techniques ;
+                                 rdfs:range :detections .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_mitigations
+:technique_implements_mitigations rdf:type owl:ObjectProperty ,
+                                           owl:TransitiveProperty ;
+                                  rdfs:domain :techniques ;
+                                  rdfs:range :detections .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_procedures
+:technique_implements_procedures rdf:type owl:ObjectProperty ,
+                                          owl:TransitiveProperty ;
+                                 rdfs:domain :techniques ;
+                                 rdfs:range :procedures .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_usedby_group
+:technique_usedby_group rdf:type owl:ObjectProperty ,
+                                 owl:TransitiveProperty ;
+                        rdfs:domain :techniques ;
+                        rdfs:range :groups .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignId
+:campaignId rdf:type owl:DatatypeProperty ;
+            rdfs:domain :campaigns ;
+            rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignName
+:campaignName rdf:type owl:DatatypeProperty ;
+              rdfs:domain :campaigns ;
+              rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/description
+:description rdf:type owl:DatatypeProperty ;
+             rdfs:domain :campaigns ,
+                         :detections ,
+                         :groups ,
+                         :mitigations ,
+                         :procedures ,
+                         :softwares ,
+                         :techniques ;
+             rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detectionId
+:detectionId rdf:type owl:DatatypeProperty ;
+             rdfs:domain :detections ;
+             rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detectionName
+:detectionName rdf:type owl:DatatypeProperty ;
+               rdfs:domain :detections ;
+               rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/exampleId
+:exampleId rdf:type owl:DatatypeProperty ;
+           rdfs:domain :procedures ;
+           rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/exampleName
+:exampleName rdf:type owl:DatatypeProperty ;
+             rdfs:domain :procedures ;
+             rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupId
+:groupId rdf:type owl:DatatypeProperty ;
+         rdfs:domain :groups ;
+         rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupName
+:groupName rdf:type owl:DatatypeProperty ;
+           rdfs:domain :groups ;
+           rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationId
+:mitigationId rdf:type owl:DatatypeProperty ;
+              rdfs:domain :detections ;
+              rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationName
+:mitigationName rdf:type owl:DatatypeProperty ;
+                rdfs:domain :mitigations ;
+                rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/referenceUrl
+:referenceUrl rdf:type owl:DatatypeProperty ;
+              rdfs:domain :campaigns ,
+                          :detections ,
+                          :mitigations ,
+                          :procedures ,
+                          :softwares ,
+                          :techniques ;
+              rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareId
+:softwareId rdf:type owl:DatatypeProperty ;
+            rdfs:domain :softwares ;
+            rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareName
+:softwareName rdf:type owl:DatatypeProperty ;
+              rdfs:domain :softwares ;
+              rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueId
+:techniqueId rdf:type owl:DatatypeProperty ;
+             rdfs:domain :techniques ;
+             rdfs:range xsd:string .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueName
+:techniqueName rdf:type owl:DatatypeProperty ,
+                        owl:FunctionalProperty ;
+               rdfs:domain :techniques ;
+               rdfs:range xsd:string .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/assets
+:assets rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/associated_groups
+:associated_groups rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns
+:campaigns rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections
+:detections rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups
+:groups rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations
+:mitigations rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures
+:procedures rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares
+:softwares rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques
+:techniques rdf:type owl:Class .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
