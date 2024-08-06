@@ -277,15 +277,16 @@ class MySQLPipeline:
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
              ex:{technique_id} a ex:techniques ;
+
             ex:techniqueName "{technique_name}" ;
+            ex:techniqueId "{technique_id}" ;
+            ex:referenceUrl "{refs}"  ;
             ex:description "{description}" .
-            {refs} 
             }} 
             """
         except Exception as e:
             print(f"An error occurred while creating TechniquesTable query: {e}")
             return ""
-
     def create_software_table_query(self, item):
         try:
             software_id = item.get('ID')
