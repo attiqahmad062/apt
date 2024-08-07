@@ -19,7 +19,7 @@ class GroupTable(scrapy.Item):
 class TechniquesTable(scrapy.Item):
     ID = scrapy.Field()
     Use = scrapy.Field()
-    Domain = scrapy.Field()
+    Domain = scrapy.Field()  
     References = scrapy.Field()
     SubId = scrapy.Field()
     GroupId = scrapy.Field()
@@ -50,7 +50,6 @@ class Mitigations(scrapy.Item):
     ID = scrapy.Field()
     Mitigation = scrapy.Field()
     Description = scrapy.Field()
-
 class Detections(scrapy.Item):
     ID = scrapy.Field()
     DataSource = scrapy.Field()
@@ -96,11 +95,11 @@ class MySQLPipeline:
             print(f"An error occurred while executing SPARQL query: {e}")
     def create_group_table_query(self, item):
         try:
-            group_name = item.get('GroupName', '').replace(' ', '_')
-            mitre_name = item.get('MittreName', '').replace('"', '\\"')
-            summary = item.get('Summary', '').replace('"', '\\"')
-            associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
-            url = item.get('Url', '').replace('"', '\\"')
+            group_name = item.get('GroupName', '')
+            mitre_name = item.get('MittreName', '')
+            summary = item.get('Summary', '')
+            associated_groups = item.get('AssociatedGroups', '')
+            url = item.get('Url', '')
 
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
@@ -119,38 +118,39 @@ class MySQLPipeline:
 
 
 
-    def create_techniques_table_query(self, item):
-        def escape_string(value):
-            if value is None:
-                return ""
-            return value.replace("\\", "\\\\").replace("\"", "\\\"")
-        try:
-            technique_id = item.get('ID')
-            refs = self.create_references(item.get('References'), technique_id, 'technique')
-#   ID = scrapy.Field()
-    # Use = scrapy.Field()
-    # Domain = scrapy.Field()
-    # References = scrapy.Field() 
-    # SubId = scrapy.Field()
-    # GroupId = scrapy.Field()
-            technique_id = escape_string(item.get('ID'))
-            technique_name = escape_string(item.get('Name'))
-            description = escape_string(item.get('Use'))
-            # ex:description "{description}" ;   
-            return f"""
-            PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
-            INSERT DATA {{
-             ex:{technique_id} a ex:techniques ;
+#     def create_techniques_table_query(self, item):
+#         def escape_string(value):
+#             if value is None:
+#                 return ""
+#             return value.replace("\\", "\\\\").replace("\"", "\\\"")
+#         try:
+#             technique_id = item.get('ID')
+#             refs = self.create_references(item.get('References'), technique_id, 'technique')
+# #   ID = scrapy.Field()
+#     # Use = scrapy.Field()
+#     # Domain = scrapy.Field()
+#     # References = scrapy.Field() 
+#     # SubId = scrapy.Field()
+#     # GroupId = scrapy.Field()
+#             technique_id = escape_string(item.get('ID'))
+#             technique_name = escape_string(item.get('Name'))
+#             description = escape_string(item.get('Use'))
+#             # ex:description "{description}" ;   
+#             return f"""
+#             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+#             INSERT DATA {{
+#              ex:{technique_id} a ex:techniques ;
 
-            ex:techniqueName "{technique_name}" ;
-            ex:techniqueId "{technique_id}" ;
-            ex:referenceUrl "{refs}"  ;
-            ex:description "{description}" .
-            }} 
-            """
-        except Exception as e:
-            print(f"An error occurred while creating TechniquesTable query: {e}")
-            return ""
+#             ex:techniqueName "{technique_name}" ;
+#             ex:techniqueId "{technique_id}" ;
+       
+#             ex:description "{description}" .
+#                  {refs}  
+#             }} 
+#             """
+#         except Exception as e:
+#             print(f"An error occurred while creating TechniquesTable query: {e}")
+#             return ""
     def create_software_table_query(self, item):
         try:
             software_id = item.get('ID')
@@ -161,7 +161,7 @@ class MySQLPipeline:
                 ex:{software_id} a ex:softwares ;
                     ex:name "{item.get('Name')}" ;
                     ex:techniques "{item.get('Techniques')}" .
-                  ex:referenceUrl "{refs} "
+                  {refs} 
             }}
             """
         except Exception as e:
@@ -229,7 +229,7 @@ class MySQLPipeline:
             links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', references)
             triples = ""
             for link in links:
-                triples += f'ex:{id} ex:hasReference "{link}" .\n'
+                triples += f'ex:{id} ex:ReferenceUrl "{link}" .\n'
             return triples
         except Exception as e:
             print(f"An error occurred while creating references: {e}")
