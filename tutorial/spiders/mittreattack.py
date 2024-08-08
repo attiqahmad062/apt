@@ -26,7 +26,8 @@ class MITREAttackSpider(scrapy.Spider):
                 'GroupName': column2_data.strip() if column2_data else None,
                 'AssociatedGroups': column3_data.strip() if column3_data else None,
                 'Summary': column4_data.strip() if column4_data else None,
-            })
+                })
+
 #             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
               yield response.follow(column1_url_absolute, self.parse_group_page)
