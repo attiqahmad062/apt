@@ -98,6 +98,7 @@ class MySQLPipeline:
                 group_name = item.get('GroupName', '').replace(' ', '_')
                 # mitre_name = item.get('MittreName', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
+                group_id=item.get('GroupId')
                 # associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
@@ -107,8 +108,8 @@ class MySQLPipeline:
                 INSERT DATA {{
                     ex:{group_name} a ex:groups ;
                         ex:groupName "{group_name}" ;
-                        ex:description "{summary}" .
-                       
+                        ex:description "{summary}" ;
+                        ex:groupId  "{group_id}" .
                 }}
                 """
             except Exception as e:
@@ -143,7 +144,7 @@ class MySQLPipeline:
             ex:techniqueId "{technique_id}" ;
        
             ex:description "{description}" .
-                 {refs}  
+                 {refs}     
             }} 
             """
         except Exception as e:
@@ -232,3 +233,4 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while creating references: {e}")
             return ""
+ 

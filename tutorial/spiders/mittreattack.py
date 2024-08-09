@@ -88,16 +88,16 @@ class MITREAttackSpider(scrapy.Spider):
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             references_string = ' '.join(references)
-            # yield TechniquesTable( {
-            #     'Domain': domain_data.strip() if domain_data else None,
-            #     'Name': name_data.strip() if name_data else None,
-            #     'ID': id_data.strip() if id_data else None,
-            #     'SubId': sub_id_data.strip() if sub_id_data else None,
-            #     'Use': use_data if use_data else None,
-            #     "References": references_string
-            # })
-        #     if technique_url:
-        #         yield response.follow(technique_url, self.parse_techniques)
+            yield TechniquesTable( {
+                'Domain': domain_data.strip() if domain_data else None,
+                'Name': name_data.strip() if name_data else None,
+                'ID': id_data.strip() if id_data else None,
+                'SubId': sub_id_data.strip() if sub_id_data else None,
+                'Use': use_data if use_data else None,
+                "References": references_string
+            })
+            # if technique_url:
+            #     yield response.follow(technique_url, self.parse_techniques)
         # # Software Table:
         softwareTable = response.css('table.table-alternate tr')
         for index, row in enumerate(softwareTable, start=1):
