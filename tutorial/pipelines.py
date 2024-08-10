@@ -125,34 +125,39 @@ class MySQLPipeline:
             if value is None:
                 return ""
             return value.replace("\\", "\\\\").replace("\"", "\\\"")
+
         try:
             technique_id = item.get('ID')
+            if not technique_id:
+                raise ValueError("Technique ID is missing or empty")
+
             refs = self.create_references(item.get('References'), technique_id, 'technique')
-#   ID = scrapy.Field()
-    # Use = scrapy.Field()
-    # Domain = scrapy.Field()
-    # References = scrapy.Field() 
-    # SubId = scrapy.Field()
-    # GroupId = scrapy.Field()
-            technique_id = escape_string(item.get('ID'))
+
+            technique_id = escape_string(technique_id)
             technique_name = escape_string(item.get('Name'))
             use = escape_string(item.get('Use'))
-            # ex:description "{description}" ;   
+            domain = escape_string(item.get('Domain'))
+            sub_id = escape_string(item.get('SubId'))
+
+            if not technique_id or not technique_name:
+                raise ValueError("Essential fields are missing")
+
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-            ex:{technique_id} a ex:techniques ;
-            ex:domain "{item.get('Domain')}" ;
-            ex:subId "{item.get('SubId')}" ;
-            ex:techniqueName "{technique_name}" ;
-            ex:techniqueId    "{technique_id}" ;
-            ex:use "{use}" .
-                 {refs}     
+                ex:{technique_id} a ex:techniques ;
+                ex:domain "{domain}" ;
+                ex:subId "{sub_id}" ;
+                ex:techniqueName "{technique_name}" ;
+                ex:techniqueId "{technique_id}" ;
+                ex:use "{use}" .
+                {refs}     
             }} 
             """
         except Exception as e:
             print(f"An error occurred while creating TechniquesTable query: {e}")
             return ""
+
     def create_software_table_query(self, item):
         try:
             #  ex:techniques "{item.get('Techniques')}" .
