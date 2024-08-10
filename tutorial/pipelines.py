@@ -163,8 +163,8 @@ class MySQLPipeline:
             INSERT DATA {{
                 ex:{software_id} a ex:softwares ;
                     ex:softwareName "{item.get('Name')}" ;
-                    ex:softwareTechniques "{software_id}" ;
-                    ex:softwareId "{item.get('Techniques')}" .
+                    ex:softwareTechniques "{item.get('Techniques')}" ;
+                    ex:softwareId "{software_id}" .
                 {refs}
             }}  
             """
@@ -189,18 +189,18 @@ class MySQLPipeline:
             print(f"An error occurred while creating CompainsTable query: {e}")
             return ""
 
-    def create_sub_techniques_query(self, item):
-        try:
-            return f"""
-            PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
-            INSERT DATA {{
-                ex:{item.get('ID')} a ex:subtechniques ;
-                    ex:name "{item.get('Name')}" .
-            }}
-            """
-        except Exception as e:
-            print(f"An error occurred while creating SubTechniques query: {e}")
-            return ""
+    # def create_sub_techniques_query(self, item):
+    #     try:
+    #         return f"""
+    #         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+    #         INSERT DATA {{
+    #             ex:{item.get('ID')} a ex:subtechniques ;
+    #                 ex:name "{item.get('Name')}" .
+    #         }}
+    #         """
+    #     except Exception as e:
+    #         print(f"An error occurred while creating SubTechniques query: {e}")
+    #         return ""
 
     def create_procedure_examples_query(self, item):
         try:
