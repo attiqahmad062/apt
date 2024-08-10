@@ -79,6 +79,8 @@ class MySQLPipeline:
                 query = self.create_procedure_examples_query(item)
             elif isinstance(item, Mitigations):
                 query = self.create_mitigations_query(item)
+            elif isinstance(item, Detections):
+                query = self.create_detections_query(item)
             else:
                 return item   
             self.execute_sparql(query)
@@ -96,9 +98,9 @@ class MySQLPipeline:
     def create_group_table_query(self, item):
             try:
                 group_name = item.get('GroupName', '').replace(' ', '_')
-                # mitre_name = item.get('MittreName', '').replace('"', '\\"')
+                mitre_name = item.get('MittreName', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
-                group_id=item.get('GroupId')
+               
                 associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
@@ -106,9 +108,9 @@ class MySQLPipeline:
                 return f"""
                 PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
                 INSERT DATA {{
-                    ex:{group_name} a ex:groups ;
+                    ex:{mitre_name} a ex:groups ;
                         ex:groupName "{group_name}" ;
-                        ex:groupId "{group_id}" ;
+                        ex:groupId "{mitre_name}" ;
                         ex:description "{summary}" ;
                         ex:associatedGroups  "{associated_groups}" .
                 }}
@@ -143,7 +145,7 @@ class MySQLPipeline:
             ex:domain "{item.get('Domain')}" ;
             ex:subId "{item.get('SubId')}" ;
             ex:techniqueName "{technique_name}" ;
-            ex:techniqueId    ex"{technique_id}" ;
+            ex:techniqueId    "{technique_id}" ;
             ex:use "{use}" .
                  {refs}     
             }} 
@@ -161,7 +163,8 @@ class MySQLPipeline:
             INSERT DATA {{
                 ex:{software_id} a ex:softwares ;
                     ex:softwareName "{item.get('Name')}" ;
-                    ex:softwareId "{software_id}" .
+                    ex:softwareTechniques "{software_id}" ;
+                    ex:softwareId "{item.get('Techniques')}" .
                 {refs}
             }}  
             """
@@ -170,13 +173,16 @@ class MySQLPipeline:
             return ""
     def create_compains_table_query(self, item):
         try:
+            campaign_id=item.get('ID')
+            refs = self.create_references(item.get('References'), campaign_id, 'campaign')
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:campaigns ;
-                    ex:name "{item.get('Name')}" ;
-                    ex:references "{item.get('References')}" ;
-                    ex:techniques "{item.get('Techniques')}" .
+                    ex:campainName "{item.get('Name')}" ;
+                    ex:campainId "{item.get('References')}" ;
+                    ex:description "{item.get('Techniques')}" .
+                    {refs}
             }}
             """
         except Exception as e:
@@ -198,12 +204,16 @@ class MySQLPipeline:
 
     def create_procedure_examples_query(self, item):
         try:
+            procedure_id=item.get('ID')
+            refs = self.create_references(item.get('References'), procedure_id, 'procedure')
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:procedures ;
-                    ex:name "{item.get('Name')}" ;
+                    ex:procedureId "{item.get('ID')}" ;
+                    ex:procedureName "{item.get('Name')}" ;
                     ex:description "{item.get('Description')}" .
+                   {refs}
             }}
             """
         except Exception as e:
@@ -212,12 +222,36 @@ class MySQLPipeline:
 
     def create_mitigations_query(self, item):
         try:
+            mitigation_id=item.get('ID')
+            refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
+           
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:mitigations ;
-                    ex:mitigation "{item.get('Mitigation')}" ;
+                    ex:mitigationId "{item.get('ID')}";
+                    ex:mitigationName "{item.get('Mitigation')}" ;
                     ex:description "{item.get('Description')}" .
+            }}
+            """
+        except Exception as e:
+            print(f"An error occurred while creating Mitigations query: {e}")
+            return ""
+        
+    def create_detections_query(self, item):
+        try:
+            detection_id=item.get('ID')
+            refs = self.create_references(item.get('References'), detection_id, 'detection')
+           
+            return f"""
+            PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+            INSERT DATA {{
+                ex:{item.get('ID')} a ex:mitigations ;
+                    ex:detectionId "{item.get('ID')}";
+                    ex:dataSource "{item.get('DataSource')}" ;
+                    ex:detects "{item.get('Detects')}" ;
+                    ex:dataComponent "{item.get('DataComponent')}" ;
+                    ex:description "{item.get('description')}" ;
             }}
             """
         except Exception as e:
@@ -229,7 +263,7 @@ class MySQLPipeline:
             links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', references)
             triples = ""
             for i, link in enumerate(links, start=1):
-                triples += f'ex:{id} a ex:referenceUrl ; ex:url "{link}" .\n'
+                triples += f'ex:{id}  a  ex:referenceUrl; ex:url "{link}" .\n'
             return triples
         except Exception as e:
             print(f"An error occurred while creating references: {e}")

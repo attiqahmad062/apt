@@ -214,6 +214,33 @@
     
 
 
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsFirstseen -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsFirstseen">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsLastseen -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsLastseen">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsTechniques -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsTechniques">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#dataComponent -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#dataComponent">
@@ -347,7 +374,7 @@
     <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationId -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationId">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
         <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
     </owl:DatatypeProperty>
     
