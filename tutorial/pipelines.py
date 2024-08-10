@@ -99,7 +99,7 @@ class MySQLPipeline:
                 # mitre_name = item.get('MittreName', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
                 group_id=item.get('GroupId')
-                # associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
+                associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
                         # ex:url "{url}" .
@@ -108,8 +108,9 @@ class MySQLPipeline:
                 INSERT DATA {{
                     ex:{group_name} a ex:groups ;
                         ex:groupName "{group_name}" ;
+                        ex:groupId "{group_id}" ;
                         ex:description "{summary}" ;
-                        ex:groupId  "{group_id}" .
+                        ex:associatedGroups  "{associated_groups}" .
                 }}
                 """
             except Exception as e:
@@ -133,17 +134,17 @@ class MySQLPipeline:
     # GroupId = scrapy.Field()
             technique_id = escape_string(item.get('ID'))
             technique_name = escape_string(item.get('Name'))
-            description = escape_string(item.get('Use'))
+            use = escape_string(item.get('Use'))
             # ex:description "{description}" ;   
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-             ex:{technique_id} a ex:techniques ;
-
+            ex:{technique_id} a ex:techniques ;
+            ex:domain "{item.get('Domain')}" ;
+            ex:subId "{item.get('SubId')}" ;
             ex:techniqueName "{technique_name}" ;
-            ex:techniqueId "{technique_id}" ;
-       
-            ex:description "{description}" .
+            ex:techniqueId    ex"{technique_id}" ;
+            ex:use "{use}" .
                  {refs}     
             }} 
             """
@@ -159,8 +160,8 @@ class MySQLPipeline:
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{software_id} a ex:softwares ;
-                    ex:softwareName "{item.get('Name')}" .
-                   
+                    ex:softwareName "{item.get('Name')}" ;
+                    ex:softwareId "{software_id}" .
                 {refs}
             }}  
             """
