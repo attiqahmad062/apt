@@ -218,6 +218,7 @@ class MySQLPipeline:
     def create_procedure_examples_query(self, item):
         try:
             procedure_id=item.get('ID')
+            
             refs = self.create_references(item.get('References'), procedure_id, 'procedure')
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
@@ -239,14 +240,16 @@ class MySQLPipeline:
                 return ""
             return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-            mitigation_id=item.get('ID')
+            detects = escape_string(item.get('Description'))
+            mitigation_id = escape_string(item.get('ID'))
+            
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
            
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:mitigations ;
-                    ex:mitigationId "{item.get('ID')}";
+                ex:{mitigation_id} a ex:mitigations ;
+                    ex:mitigationId "{mitigation_id}";
                     ex:mitigationName "{item.get('Mitigation')}" ;
                     ex:description "{item.get('Description')}" .
             }}
@@ -261,19 +264,19 @@ class MySQLPipeline:
                 return ""
             return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-            detection_id=item.get('ID')
+     
             detects = escape_string(item.get('Detects'))
+            detection_id = escape_string(item.get('ID'))
             refs = self.create_references(item.get('References'), detection_id, 'detection')
-           
+            
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:detections ;
-                    ex:detectionId "{item.get('ID')}";
+                    ex:detectionId "{detection_id}";
                     ex:dataSource "{item.get('DataSource')}" ;
                     ex:detects "{detects}" ;
-                    ex:dataComponent "{item.get('DataComponent')}" ;
-                    ex:description "{item.get('description')}" ;
+                    ex:dataComponent "{item.get('DataComponent')}" .
             }}
             """
         except Exception as e:
