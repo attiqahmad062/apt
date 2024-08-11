@@ -1,0 +1,518 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/"
+     xml:base="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#detections_implemented_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#detections_implemented_technique"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#group_uses_software -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#group_uses_software"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#mitigations_implementedby_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#mitigations_implementedby_technique"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#procedures_implementedby_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#procedures_implementedby_technique"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#software_usedby_group -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#software_usedby_group"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implementedby_procedure -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implementedby_procedure"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_detections -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_detections"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_mitigations -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_implements_mitigations"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_subclass_subtechnique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#technique_subclass_subtechnique">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#sub_techniques"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns_carriedby_groups -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns_carriedby_groups">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections_implementedby_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections_implementedby_technique">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_ispartof_campains -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_ispartof_campains">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_software -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_software">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/group_uses_technique">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations_implementedby_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations_implementedby_technique">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedure_implements_technique -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedure_implements_technique">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/software_usedby_group -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/software_usedby_group">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_detections -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_detections">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_mitigations -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_mitigations">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_procedures -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_implements_procedures">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_usedby_group -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/technique_usedby_group">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#associatedgroups -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#associatedgroups">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsFirstSeen -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsFirstSeen">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsLastSeen -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsLastSeen">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsTechniques -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#campaignsTechniques">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#dataComponent -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#dataComponent">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#detects -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#detects">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#domain -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#domain">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#procedureId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#procedureId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#softwareTechniques -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#softwareTechniques">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#subId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#subId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#use -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#use">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaignName">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/dataSource -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/dataSource">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/description -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/description">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detectionId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detectionId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groupName">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigationName">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedureName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedureName">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/referenceUrl -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/referenceUrl">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwareName">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueId -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueId">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniqueName">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#sub_techniques -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5#sub_techniques"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/assets -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/assets"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/campaigns"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/detections"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/groups"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/mitigations"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/procedures"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/softwares"/>
+    
+
+
+    <!-- http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/attiqahmad/ontologies/2024/6/untitled-ontology-5/techniques"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi -->
+
