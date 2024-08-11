@@ -66,10 +66,10 @@ class MySQLPipeline:
         try:
             if isinstance(item, GroupTable):
                 query = self.create_group_table_query(item)
-            elif isinstance(item, TechniquesTable):
-                query = self.create_techniques_table_query(item)
-                print(query)
-            elif isinstance(item, SoftwareTable):
+            # elif isinstance(item, TechniquesTable):
+            #     query = self.create_techniques_table_query(item)
+            #     print(query)
+            # elif isinstance(item, SoftwareTable):
                 query = self.create_software_table_query(item)
             elif isinstance(item, CampaignsTable):
                 query = self.create_compains_table_query(item)
@@ -176,6 +176,12 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while creating SoftwareTable query: {e}")
             return ""
+    #       ID = scrapy.Field()
+    # Name = scrapy.Field()
+    # FirstSeen = scrapy.Field()
+    # LastSeen = scrapy.Field()
+    # References = scrapy.Field()
+    # Techniques = scrapy.Field()
     def create_compains_table_query(self, item):
         try:
             campaign_id=item.get('ID')
@@ -184,9 +190,11 @@ class MySQLPipeline:
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:campaigns ;
-                    ex:campainName "{item.get('Name')}" ;
-                    ex:campainId "{item.get('References')}" ;
-                    ex:description "{item.get('Techniques')}" .
+                    ex:campaignName "{item.get('Name')}" ;
+                    ex:campaignId "{item.get('ID')}" ;
+                    ex:campaignsTechniques "{item.get('Techniques')}" .
+                    ex:campaignsFirstseen "{item.get('FirstSeen')}" .
+                    ex:campaignsLastseen "{item.get('LastSeen')}" .
                     {refs}
             }}
             """
@@ -226,6 +234,10 @@ class MySQLPipeline:
             return ""
 
     def create_mitigations_query(self, item):
+        def escape_string(value):
+            if value is None:
+                return ""
+            return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
             mitigation_id=item.get('ID')
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
@@ -244,17 +256,22 @@ class MySQLPipeline:
             return ""
         
     def create_detections_query(self, item):
+        def escape_string(value):
+            if value is None:
+                return ""
+            return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
             detection_id=item.get('ID')
+            detects = escape_string(item.get('Detects'))
             refs = self.create_references(item.get('References'), detection_id, 'detection')
            
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:mitigations ;
+                ex:{item.get('ID')} a ex:detections ;
                     ex:detectionId "{item.get('ID')}";
                     ex:dataSource "{item.get('DataSource')}" ;
-                    ex:detects "{item.get('Detects')}" ;
+                    ex:detects "{detects}" ;
                     ex:dataComponent "{item.get('DataComponent')}" ;
                     ex:description "{item.get('description')}" ;
             }}
