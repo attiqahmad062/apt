@@ -216,42 +216,48 @@ class MySQLPipeline:
     #         return ""
 
     def create_procedure_examples_query(self, item):
-        try:
-            procedure_id=item.get('ID')
-            
-            refs = self.create_references(item.get('References'), procedure_id, 'procedure')
-            return f"""
-            PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
-            INSERT DATA {{
-                ex:{item.get('ID')} a ex:procedures ;
-                    ex:procedureId "{item.get('ID')}" ;
-                    ex:procedureName "{item.get('Name')}" ;
-                    ex:description "{item.get('Description')}" .
-                   {refs}
-            }}
-            """
-        except Exception as e:
-            print(f"An error occurred while creating ProcedureExamples query: {e}")
+     def escape_string(value):
+        if value is None:
             return ""
+        return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
+
+     try:
+        procedure_id = escape_string(item.get('ID'))
+        name = escape_string(item.get('Name'))
+        description = escape_string(item.get('Description'))
+        refs = self.create_references(item.get('References'), procedure_id, 'procedure')
+        return f"""
+        PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+        INSERT DATA {{
+            ex:{procedure_id} a ex:procedures ;
+                ex:procedureName  "{name}" ;
+                ex:description "{description}" .
+            {refs}
+        }}
+        """
+     except Exception as e:
+        print(f"An error occurred while creating ProcedureExamples query: {e}")
+        return ""
+
 
     def create_mitigations_query(self, item):
         def escape_string(value):
             if value is None:
                 return ""
-            return value.replace("\\", "\\\\").replace("\"", "\\\"")
+            return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-            detects = escape_string(item.get('Description'))
+            description = escape_string(item.get('Description'))
             mitigation_id = escape_string(item.get('ID'))
-            
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
            
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{mitigation_id} a ex:mitigations ;
-                    ex:mitigationId "{mitigation_id}";
+                  
                     ex:mitigationName "{item.get('Mitigation')}" ;
-                    ex:description "{item.get('Description')}" .
+                    ex:description "{description}" .
+                    {refs}
             }}
             """
         except Exception as e:
@@ -264,12 +270,10 @@ class MySQLPipeline:
                 return ""
             return value.replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-     
             detects = escape_string(item.get('Detects'))
             detection_id = escape_string(item.get('ID'))
             refs = self.create_references(item.get('References'), detection_id, 'detection')
-            
-            return f"""
+            return f""" 
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{item.get('ID')} a ex:detections ;
@@ -277,6 +281,7 @@ class MySQLPipeline:
                     ex:dataSource "{item.get('DataSource')}" ;
                     ex:detects "{detects}" ;
                     ex:dataComponent "{item.get('DataComponent')}" .
+                    {refs} .
             }}
             """
         except Exception as e:
