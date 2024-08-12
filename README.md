@@ -1,1 +1,9 @@
-Coming Soon... ✌ 
+Our Final Year Project (FYP) focuses on detecting and extracting Advanced Persistent Threats (APTs) through Actor Threat Profiling by using text mining and machine learning techniques. We aim to create a system that can identify and analyze APTs, which are complex, long-term cyberattacks planned by skilled threat actors. These attacks typically target specific organizations or industries to steal sensitive information or disrupt operations.
+
+The main goal is to design and implement tools capable of recognizing patterns of APTs from network traffic and system logs. This involves developing algorithms that use text mining to filter through large volumes of data and machine learning to classify and recognize threat patterns. Text mining will process and analyze textual data from sources to uncover hidden threats. Machine learning algorithms will learn from this data to detect patterns and predict future threats.
+
+By examining the behavior and strategies of threat actors, the system will provide detailed insights into their methods, origins, and potential targets. This involves analyzing various indicators of compromise (IOCs), such as unusual network activities, specific malware signatures, and phishing attempts, to build a profile of the attackers. Understanding these elements helps in predicting their moves.
+
+The integration of text mining and machine learning will allow the system to improve its detection capabilities over time. As it encounters new data, it will adapt and become more effective at identifying new threats. This adaptive approach is essential for staying ahead of cybercriminals who constantly evolve their tactics to bypass traditional security measures.
+
+Our aim is to strengthen organizational defenses against persistent and complex cyberattacks. By providing a detailed profiling mechanism, the system will help security teams understand the threats they face and develop effective countermeasures. This proactive defense strategy is crucial for protecting sensitive data and critical infrastructure, ensuring secure operations in a digital world.
