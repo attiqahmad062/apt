@@ -99,20 +99,20 @@ class MySQLPipeline:
             print(f"An error occurred while executing SPARQL query: {e}")
     def create_group_table_query(self, item):
             try:
-                group_name = item.get('GroupName', '').replace(' ', '_')
                 mitre_name = item.get('MittreName', '').replace('"', '\\"')
+                group_name = item.get('GroupName', '').replace(' ', '_')
+                associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
                
-                associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
                         # ex:url "{url}" .
                 return f"""
                 PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
                 INSERT DATA {{
-                    ex:{mitre_name} a ex:groups ;
-                        ex:groupName "{group_name}" ;
+                        ex:{mitre_name} a ex:groups ;
                         ex:groupId "{mitre_name}" ;
+                        ex:groupName "{group_name}" ;
                         ex:description "{summary}" ;
                         ex:associatedGroups  "{associated_groups}" .
                 }}
