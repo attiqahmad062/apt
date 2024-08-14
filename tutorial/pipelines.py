@@ -26,6 +26,7 @@ class TechniquesTable(scrapy.Item):
     Name = scrapy.Field()
 class SoftwareTable(scrapy.Item):
     ID = scrapy.Field()
+    GroupId = scrapy.Field()
     Name = scrapy.Field()
     References = scrapy.Field()
     Techniques = scrapy.Field()
@@ -33,6 +34,7 @@ class CampaignsTable(scrapy.Item):
     ID = scrapy.Field()
     Name = scrapy.Field()
     FirstSeen = scrapy.Field()
+    GroupId = scrapy.Field()
     LastSeen = scrapy.Field()
     References = scrapy.Field()
     Techniques = scrapy.Field()
@@ -66,10 +68,10 @@ class MySQLPipeline:
         try:
             if isinstance(item, GroupTable):
                 query = self.create_group_table_query(item)
-            # elif isinstance(item, TechniquesTable):
-            #     query = self.create_techniques_table_query(item)
-            #     print(query)
-            # elif isinstance(item, SoftwareTable):
+            elif isinstance(item, TechniquesTable):
+                query = self.create_techniques_table_query(item)
+                print(query)
+            elif isinstance(item, SoftwareTable):
                 query = self.create_software_table_query(item)
             elif isinstance(item, CampaignsTable):
                 query = self.create_compains_table_query(item)
@@ -124,7 +126,7 @@ class MySQLPipeline:
         def escape_string(value):
             if value is None:
                 return ""
-            return value.replace("\\", "\\\\").replace("\"", "\\\"")
+            return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
 
         try:
             technique_id = item.get('ID')
@@ -138,7 +140,8 @@ class MySQLPipeline:
             use = escape_string(item.get('Use'))
             domain = escape_string(item.get('Domain'))
             sub_id = escape_string(item.get('SubId'))
-
+            group_id = escape_string(item.get('GroupId'))
+        
             if not technique_id or not technique_name:
                 raise ValueError("Essential fields are missing")
 
@@ -150,6 +153,7 @@ class MySQLPipeline:
                 ex:subId "{sub_id}" ;
                 ex:techniqueName "{technique_name}" ;
                 ex:techniqueId "{technique_id}" ;
+                ex:group_uses_techniques "{group_id}";
                 ex:use "{use}" .
                 {refs}     
             }} 
@@ -169,6 +173,7 @@ class MySQLPipeline:
                 ex:{software_id} a ex:softwares ;
                     ex:softwareName "{item.get('Name')}" ;
                     ex:softwareTechniques "{item.get('Techniques')}" ;
+                    ex:group_uses_software "{item.get('GroupId')}";
                     ex:softwareId "{software_id}" .
                 {refs}
             }}  
@@ -192,6 +197,7 @@ class MySQLPipeline:
                 ex:{item.get('ID')} a ex:campaigns ;
                     ex:campaignName "{item.get('Name')}" ;
                     ex:campaignId "{item.get('ID')}" ;
+                    ex:group_ispartof_campaigns "{item.get('GroupId')}";
                     ex:campaignsTechniques "{item.get('Techniques')}" .
                     ex:campaignsFirstseen "{item.get('FirstSeen')}" .
                     ex:campaignsLastseen "{item.get('LastSeen')}" .
@@ -254,7 +260,6 @@ class MySQLPipeline:
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{mitigation_id} a ex:mitigations ;
-                  
                     ex:mitigationName "{item.get('Mitigation')}" ;
                     ex:description "{description}" .
                     {refs}
@@ -268,7 +273,7 @@ class MySQLPipeline:
         def escape_string(value):
             if value is None:
                 return ""
-            return value.replace("\\", "\\\\").replace("\"", "\\\"")
+            return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
         try:
             detects = escape_string(item.get('Detects'))
             detection_id = escape_string(item.get('ID'))
