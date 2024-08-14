@@ -34,7 +34,7 @@ class CampaignsTable(scrapy.Item):
     ID = scrapy.Field()
     Name = scrapy.Field()
     FirstSeen = scrapy.Field()
-    GroupId = scrapy.Field()
+    GroupId = scrapy.Field() 
     LastSeen = scrapy.Field()
     References = scrapy.Field()
     Techniques = scrapy.Field()
