@@ -2,6 +2,7 @@
 import re
 import scrapy
 from itemadapter import ItemAdapter
+from datetime import datetime
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, URLENCODED
 
 GRAPHDB_SETTINGS = {
@@ -120,47 +121,102 @@ class MySQLPipeline:
             except Exception as e:
                 print(f"An error occurred while creating GroupTable query: {e}")
                 return ""
-
-
+            
     def create_techniques_table_query(self, item):
-        def escape_string(value):
+     def escape_string(value):
             if value is None:
                 return ""
             return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
 
-        try:
-            technique_id = item.get('ID')
-            if not technique_id:
-                raise ValueError("Technique ID is missing or empty")
+     try:
+        technique_id = item.get('ID')
+        if not technique_id:
+            raise ValueError("Technique ID is missing or empty")
 
-            refs = self.create_references(item.get('References'), technique_id, 'technique')
+        refs = self.create_references(item.get('References'), technique_id, 'technique')
 
-            technique_id = escape_string(technique_id)
-            technique_name = escape_string(item.get('Name'))
-            use = escape_string(item.get('Use'))
-            domain = escape_string(item.get('Domain'))
-            sub_id = escape_string(item.get('SubId'))
-            group_id = escape_string(item.get('GroupId'))
-        
-            if not technique_id or not technique_name:
-                raise ValueError("Essential fields are missing")
-
-            return f"""
-            PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
-            INSERT DATA {{
-                ex:{technique_id} a ex:techniques ;
-                ex:domain "{domain}" ;
-                ex:subId "{sub_id}" ;
-                ex:techniqueName "{technique_name}" ;
-                ex:techniqueId "{technique_id}" ;
-                ex:group_uses_techniques "{group_id}";
-                ex:use "{use}" .
-                {refs}     
-            }} 
+        technique_id = escape_string(technique_id)
+        technique_name = escape_string(item.get('Name'))
+        use = escape_string(item.get('Use'))
+        domain = escape_string(item.get('Domain'))
+        sub_id = escape_string(item.get('SubId'))
+        group_id = escape_string(item.get('GroupId'))
+        if not technique_id or not technique_name:
+            raise ValueError("Essential fields are missing")
+        if sub_id:
+            # If subId exists, delete any existing data with the same technique_id and sub_id
+            delete_existing = f"""
+            DELETE WHERE {{
+                ex:{technique_id} ex:subId "{sub_id}" .
+            }};
             """
-        except Exception as e:
-            print(f"An error occurred while creating TechniquesTable query: {e}")
-            return ""
+        else:
+            # If subId does not exist, delete any existing data with the same technique_id and no subId
+            delete_existing = f"""
+            DELETE WHERE {{
+                ex:{technique_id} a ex:techniques .
+                FILTER(NOT EXISTS {{ ex:{technique_id} ex:subId ?subId }})
+            }};
+            """
+        insert_new = f"""
+        INSERT DATA {{
+            ex:{technique_id} a ex:techniques ;
+            ex:domain "{domain}" ;
+            ex:subId "{sub_id}" ;
+            ex:techniqueName "{technique_name}" ;
+            ex:techniqueId "{technique_id}" ;
+            ex:group_uses_techniques "{group_id}";
+            ex:use "{use}" .
+            {refs}     
+        }} 
+        """
+        return f"""
+        PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+        {delete_existing}
+        {insert_new}
+        """
+     except Exception as e:
+        print(f"An error occurred while creating TechniquesTable query: {e}")
+        return "" 
+    # def create_techniques_table_query(self, item):
+    #     def escape_string(value):
+    #         if value is None:
+    #             return ""
+    #         return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
+
+    #     try:
+    #         technique_id = item.get('ID')
+    #         if not technique_id:
+    #             raise ValueError("Technique ID is missing or empty")
+
+    #         refs = self.create_references(item.get('References'), technique_id, 'technique')
+
+    #         technique_id = escape_string(technique_id)
+    #         technique_name = escape_string(item.get('Name'))
+    #         use = escape_string(item.get('Use'))
+    #         domain = escape_string(item.get('Domain'))
+    #         sub_id = escape_string(item.get('SubId'))
+    #         group_id = escape_string(item.get('GroupId'))
+        
+    #         if not technique_id or not technique_name:
+    #             raise ValueError("Essential fields are missing")
+
+    #         return f"""
+    #         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+    #         INSERT DATA {{
+    #             ex:{technique_id} a ex:techniques ;
+    #             ex:domain "{domain}" ;
+    #             ex:subId "{sub_id}" ;
+    #             ex:techniqueName "{technique_name}" ;
+    #             ex:techniqueId "{technique_id}" ;
+    #             ex:group_uses_techniques "{group_id}";
+    #             ex:use "{use}" .
+    #             {refs}     
+    #         }} 
+    #         """
+    #     except Exception as e:
+    #         print(f"An error occurred while creating TechniquesTable query: {e}")
+    #         return ""
 
     def create_software_table_query(self, item):
         try:
@@ -187,26 +243,83 @@ class MySQLPipeline:
     # LastSeen = scrapy.Field()
     # References = scrapy.Field()
     # Techniques = scrapy.Field()
+    
+
     def create_compains_table_query(self, item):
+        def escape_string(value):
+            if value is None:
+                return ""
+            return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
+
+        def format_date(date_string):
+            try:
+                # Attempt to parse the date string (assuming the format is like 'June 2022')
+                parsed_date = datetime.strptime(date_string, "%B %Y")
+                # Return the date in xsd:date format (YYYY-MM-DD)
+                return parsed_date.strftime("%Y-%m-%d")
+            except ValueError:
+                # If parsing fails, return the original string, but this might still cause issues
+                return date_string
+
         try:
-            campaign_id=item.get('ID')
+            campaign_id = escape_string(item.get('ID'))
+            first_seen = format_date(escape_string(item.get('FirstSeen')))
+            last_seen = format_date(escape_string(item.get('LastSeen')))
+            techniques = item.get('Techniques')
+            
             refs = self.create_references(item.get('References'), campaign_id, 'campaign')
+
+            techniques_triples = ""
+            if techniques:
+                techniques_triples = "\n".join(
+                    [f'ex:{campaign_id} ex:campaignsTechniques "{escape_string(technique)}" .' for technique in techniques]
+                )
+
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:campaigns ;
-                    ex:campaignName "{item.get('Name')}" ;
-                    ex:campaignId "{item.get('ID')}" ;
-                    ex:group_ispartof_campaigns "{item.get('GroupId')}";
-                    ex:campaignsTechniques "{item.get('Techniques')}" .
-                    ex:campaignsFirstseen "{item.get('FirstSeen')}" .
-                    ex:campaignsLastseen "{item.get('LastSeen')}" .
+                    ex:{campaign_id} a ex:campaigns ;
+                    ex:campaignName "{escape_string(item.get('Name'))}" ;
+                    ex:campaignId "{campaign_id}" ;
+                    ex:group_ispartof_campaigns "{escape_string(item.get('GroupId'))}" ;
+                    ex:campaignsFirstseen "{first_seen}"^^xsd:date ;
+                    ex:campaignsLastseen "{last_seen}"^^xsd:date .
+                    {techniques_triples}
                     {refs}
             }}
             """
         except Exception as e:
             print(f"An error occurred while creating CompainsTable query: {e}")
             return ""
+
+    # def create_compains_table_query(self, item):
+    #     def escape_string(value):
+    #         if value is None:
+    #             return ""
+    #         return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
+    #     try:
+    #         campaign_id=escape_string(item.get('ID'))
+    #         first_seen=escape_string(item.get('FirstSeen')) 
+    #         last_seen=escape_string(item.get('LastSeen')) 
+    #         # techniques=escape_string(item.get('Techniques')) 
+    #         refs = self.create_references(item.get('References'), campaign_id, 'campaign')
+    #         return f"""
+    #         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
+    #         INSERT DATA {{
+    #                 ex:{campaign_id} a ex:campaigns ;
+    #                 ex:campaignName "{item.get('Name')}" ;
+    #                 ex:campaignId "{item.get('ID')}" ;
+    #                 ex:group_ispartof_campaigns "{item.get('GroupId')}";
+    #                 ex:campaignsTechniques "{item.get('Techniques')}" .
+    #                 ex:campaignsFirstseen "{first_seen}" .
+    #                 ex:campaignsLastseen "{last_seen}" .
+    #                 {refs}
+    #         }}
+    #         """
+    #     except Exception as e:
+    #         print(f"An error occurred while creating CompainsTable query: {e}")
+    #         return ""
 
     # def create_sub_techniques_query(self, item):
     #     try:
@@ -220,7 +333,6 @@ class MySQLPipeline:
     #     except Exception as e:
     #         print(f"An error occurred while creating SubTechniques query: {e}")
     #         return ""
-
     def create_procedure_examples_query(self, item):
      def escape_string(value):
         if value is None:

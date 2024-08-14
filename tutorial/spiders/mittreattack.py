@@ -87,15 +87,15 @@ class MITREAttackSpider(scrapy.Spider):
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             references_string = ' '.join(references)
-            yield TechniquesTable( {
-                'GroupId':id_.strip() if id_data else None,
-                'Domain': domain_data.strip() if domain_data else None,
-                'Name': name_data.strip() if name_data else None,
-                'ID': id_data.strip() if id_data else None,
-                'SubId': sub_id_data.strip() if sub_id_data else None,
-                'Use': use_data if use_data else None,
-                "References": references_string
-            })
+            # yield TechniquesTable( {
+            #     'GroupId':id_.strip() if id_data else None,
+            #     'Domain': domain_data.strip() if domain_data else None,
+            #     'Name': name_data.strip() if name_data else None,
+            #     'ID': id_data.strip() if id_data else None,
+            #     'SubId': sub_id_data.strip() if sub_id_data else None,
+            #     'Use': use_data if use_data else None,
+            #     "References": references_string
+            # })
             # if technique_url:
             #     yield response.follow(technique_url, self.parse_techniques)
         # # Software Table:
@@ -113,25 +113,25 @@ class MITREAttackSpider(scrapy.Spider):
                 techniques_data.append(node.strip())
             # Check if ID starts with 'S'
             # if id_data and id_data.startswith('S') and id_data[1:].isdigit():
-                # yield SoftwareTable( {
-                #     'GroupId':id_.strip() if id_data else None,
-                #     'ID': id_data if id_data else None,
-                #     'Name': name_data if name_data else None,
-                #     'References': references_data if references_data else None,
-                #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
-                # } )
+            #     yield SoftwareTable( {
+            #         'GroupId':id_.strip() if id_data else None,
+            #         'ID': id_data if id_data else None,
+            #         'Name': name_data if name_data else None,
+            #         'References': references_data if references_data else None,
+            #         'Techniques': ' '.join(techniques_data) if techniques_data else None,
+            #     } )
 #         # campaigns   
-        # if response.css('h2#campaigns'):
-        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
-        #         yield  CampaignsTable({
-        #             'GroupId':id_.strip() if id_data else None,
-        #             'ID': row.css('td:nth-child(1) a::text').get(),
-        #             'Name': row.css('td:nth-child(2) a::text').get(),
-        #             'FirstSeen': row.css('td:nth-child(3) *::text').get(),
-        #             'LastSeen': row.css('td:nth-child(4) *::text').get(),
-        #             'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-        #              'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
-        #         })
+        if response.css('h2#campaigns'):
+            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                yield  CampaignsTable({
+                    'GroupId':id_.strip() if id_data else None,
+                    'ID': row.css('td:nth-child(1) a::text').get(),
+                    'Name': row.css('td:nth-child(2) a::text').get(),
+                    'FirstSeen': row.css('td:nth-child(3) *::text').get(),
+                    'LastSeen': row.css('td:nth-child(4) *::text').get(),
+                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                })
 # #         #associated groups (aliasDescription)
 #         if response.css('h2#aliasDescription'):
 #             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
