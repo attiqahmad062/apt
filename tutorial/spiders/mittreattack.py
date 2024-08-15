@@ -121,17 +121,17 @@ class MITREAttackSpider(scrapy.Spider):
             #         'Techniques': ' '.join(techniques_data) if techniques_data else None,
             #     } )
 #         # campaigns   
-        if response.css('h2#campaigns'):
-            for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
-                yield  CampaignsTable({
-                    'GroupId':id_.strip() if id_data else None,
-                    'ID': row.css('td:nth-child(1) a::text').get(),
-                    'Name': row.css('td:nth-child(2) a::text').get(),
-                    'FirstSeen': row.css('td:nth-child(3) *::text').get(),
-                    'LastSeen': row.css('td:nth-child(4) *::text').get(),
-                    'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
-                     'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
-                })
+        # if response.css('h2#campaigns'):
+        #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):
+                # yield  CampaignsTable({
+                #     'GroupId':id_.strip() if id_data else None,
+                #     'ID': row.css('td:nth-child(1) a::text').get(),
+                #     'Name': row.css('td:nth-child(2) a::text').get(),
+                #     'FirstSeen': row.css('td:nth-child(3) *::text').get(),
+                #     'LastSeen': row.css('td:nth-child(4) *::text').get(),
+                #     'References': row.css('td:nth-child(5)  p sup a::attr(href)').get(),
+                #      'Techniques': row.css('td:nth-child(6) a::attr(href)').getall(),
+                # })
 # #         #associated groups (aliasDescription)
 #         if response.css('h2#aliasDescription'):
 #             for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[2]/table/tbody/tr'):
@@ -159,8 +159,8 @@ class MITREAttackSpider(scrapy.Spider):
         #         'Use': use_data if use_data else None,
         #         "References": references_string
         #     })
-            # if technique_url:
-            #     yield response.follow(technique_url, self.parse_techniques)
+            if technique_url:
+                yield response.follow(technique_url, self.parse_techniques)
         # Software Table:
         # softwareTable = response.css('table.table-alternate tr')
         # for index, row in enumerate(softwareTable, start=1):
@@ -223,18 +223,28 @@ class MITREAttackSpider(scrapy.Spider):
 # #         # procedure examples
         if response.css('h2#examples'):
                 rows = response.xpath('/html/body/div[1]/div[3]/div[2]/div/div[2]/div/div/div/div[2]/table')
+
                 for row in rows:
+                        references = []   
+                        # Extract references only from the current row
                         # Extract the data from each cell in the row
                         id = row.css('td:nth-child(1) a::text').get()
                         name = row.css('td:nth-child(2) a::text').get()
                         description = row.css('td:nth-child(3) p::text').get()
-                        
-                    
+                        references_tag = 'td:nth-child(3) a'
+                        for link in row.css(references_tag):
+                            href = link.css('::attr(href)').get()
+                            text = link.css('::text').get()  
+                            if text and text.strip().startswith('[') and text.strip().endswith(']'):
+                                if href not in references:
+                                    references.append(href)
+                        references_string = ' '.join(references)
                         yield ProcedureExamples( {
                             'TechniqueId':id_,
                             'ID': id,
                             'Name': name,
-                            'Description': description
+                            'Description': description,
+                            "References": references_string
                     })
 # #         #mitigations
         # if response.css('h2#mitigations'):
@@ -258,16 +268,25 @@ class MITREAttackSpider(scrapy.Spider):
                 id = row.css('td:nth-child(1) a::text').get()
                 mitigation = row.css('td:nth-child(2) a::text').get()
                 description = row.css('td:nth-child(3) p::text').get()
+                references_tag = 'td:nth-child(3) a'
+                for link in row.css(references_tag):
+                            href = link.css('::attr(href)').get()
+                            text = link.css('::text').get()  
+                            if text and text.strip().startswith('[') and text.strip().endswith(']'):
+                                if href not in references:
+                                    references.append(href)
+                references_string = ' '.join(references)
                 # mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
                 # technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-                if id.__contains__('M'):
+                # if id.__contains__('M'):
                 
-                   yield Mitigations({
-                    'ID': id,
-                     'TechniqueId':id_,
-                    'Mitigation': mitigation,
-                    'Description': description
-                })
+                #    yield Mitigations({
+                #     'ID': id,
+                #      'TechniqueId':id_,
+                #     'Mitigation': mitigation,
+                #     'Description': description,
+                #    "References": references_string
+                # })
 # #         #detections
         # if response.css('h2#detection'):
         #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
@@ -298,12 +317,21 @@ class MITREAttackSpider(scrapy.Spider):
                 data_source = row.css('td:nth-child(2) a::text').get()
                 data_component = row.css('td:nth-child(3) a::text').get()
                 detects = row.css('td:nth-child(4) p::text').get()
-                # Yield the extracted   data
-                yield  Detections( {
-                    'ID': id,
-                    'TechniqueId':id_,
-                    'DataSource': data_source,
-                    'DataComponent': data_component,
-                    'Detects': detects
-                })
+                references_tag = 'td:nth-child(4) a'
+                for link in row.css(references_tag):
+                            href = link.css('::attr(href)').get()
+                            text = link.css('::text').get()  
+                            if text and text.strip().startswith('[') and text.strip().endswith(']'):
+                                if href not in references:
+                                    references.append(href)
+                references_string = ' '.join(references)
 
+                # Yield the extracted   data
+                # yield  Detections( {
+                    # 'ID': id,
+                    # 'TechniqueId':id_,
+                    # 'DataSource': data_source,
+                    # 'DataComponent': data_component,
+                    # 'Detects': detects,
+                    # "References": references_string
+                # })

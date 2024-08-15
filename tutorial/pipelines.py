@@ -48,16 +48,19 @@ class ProcedureExamples(scrapy.Item):
     ID = scrapy.Field()
     Name = scrapy.Field()
     Description = scrapy.Field()
-
+    References=scrapy.Field()
+    TechniqueId=scrapy.Field()
 class Mitigations(scrapy.Item):
     ID = scrapy.Field()
     Mitigation = scrapy.Field()
     Description = scrapy.Field()
+    TechniqueId=scrapy.Field()
 class Detections(scrapy.Item):
     ID = scrapy.Field()
     DataSource = scrapy.Field()
     DataComponent = scrapy.Field()
     Detects = scrapy.Field()
+    TechniqueId=scrapy.Field()
 class MySQLPipeline:
     def open_spider(self, spider):
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
