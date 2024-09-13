@@ -1,5 +1,4 @@
 # # Define your item pipelines here
-# #
 # # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 # import re
@@ -9,8 +8,7 @@
 # import mysql.connector
 # import scrapy.itemedewd
 # from itemadapter import ItemAdapter
-# import mysql.connector
-
+# import mysql.connectors
 # MYSQL_SETTINGS = {
 
 #     'host': 'localhost',

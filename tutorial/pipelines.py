@@ -54,12 +54,14 @@ class Mitigations(scrapy.Item):
     ID = scrapy.Field()
     Mitigation = scrapy.Field()
     Description = scrapy.Field()
+    References=scrapy.Field()
     TechniqueId=scrapy.Field()
 class Detections(scrapy.Item):
     ID = scrapy.Field()
     DataSource = scrapy.Field()
     DataComponent = scrapy.Field()
     Detects = scrapy.Field()
+    References=scrapy.Field()
     TechniqueId=scrapy.Field()
 class MySQLPipeline:
     def open_spider(self, spider):
@@ -175,7 +177,7 @@ class MySQLPipeline:
         """
         return f"""
         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
-        {delete_existing}
+      
         {insert_new}
         """
      except Exception as e:
@@ -342,8 +344,10 @@ class MySQLPipeline:
             return ""
         return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
 
-     try:
+     try: 
         procedure_id = escape_string(item.get('ID'))
+        if not procedure_id:
+            raise ValueError("Technique ID is missing or empty")
         name = escape_string(item.get('Name'))
         description = escape_string(item.get('Description'))
         refs = self.create_references(item.get('References'), procedure_id, 'procedure')
@@ -352,6 +356,7 @@ class MySQLPipeline:
         INSERT DATA {{
             ex:{procedure_id} a ex:procedures ;
                 ex:procedureName  "{name}" ;
+                ex:technique_implements_procedures "{item.get("TechniqueId")}";
                 ex:description "{description}" .
             {refs}
         }}
@@ -367,23 +372,24 @@ class MySQLPipeline:
                 return ""
             return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-            description = escape_string(item.get('Description'))
             mitigation_id = escape_string(item.get('ID'))
+            if not mitigation_id :
+             raise ValueError("Technique ID is missing or empty") 
+            description = escape_string(item.get('Description'))
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
-           
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
                 ex:{mitigation_id} a ex:mitigations ;
-                    ex:mitigationName "{item.get('Mitigation')}" ;
-                    ex:description "{description}" .
+                    ex:mitigationName "{item.get('Mitigation')}" ;   
+                    ex:description "{description}" ;
+                    ex:technique_implements_mitigations "{item.get("TechniqueId")}".
                     {refs}
             }}
             """
         except Exception as e:
             print(f"An error occurred while creating Mitigations query: {e}")
             return ""
-        
     def create_detections_query(self, item):
         def escape_string(value):
             if value is None:
@@ -392,6 +398,9 @@ class MySQLPipeline:
         try:
             detects = escape_string(item.get('Detects'))
             detection_id = escape_string(item.get('ID'))
+            if not detection_id :
+             raise ValueError("Technique ID is missing or empty") 
+           
             refs = self.create_references(item.get('References'), detection_id, 'detection')
             return f""" 
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
@@ -400,7 +409,8 @@ class MySQLPipeline:
                     ex:detectionId "{detection_id}";
                     ex:dataSource "{item.get('DataSource')}" ;
                     ex:detects "{detects}" ;
-                    ex:dataComponent "{item.get('DataComponent')}" .
+                    ex:dataComponent "{item.get('DataComponent')}" ;
+                    ex:technique_implements_detections"{item.get("TechniqueId")}";
                     {refs} .
             }}
             """

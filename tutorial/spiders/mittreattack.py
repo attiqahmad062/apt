@@ -87,7 +87,7 @@ class MITREAttackSpider(scrapy.Spider):
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             references_string = ' '.join(references)
-            # yield TechniquesTable( {
+            # yield ( {
             #     'GroupId':id_.strip() if id_data else None,
             #     'Domain': domain_data.strip() if domain_data else None,
             #     'Name': name_data.strip() if name_data else None,
@@ -159,8 +159,8 @@ class MITREAttackSpider(scrapy.Spider):
         #         'Use': use_data if use_data else None,
         #         "References": references_string
         #     })
-            if technique_url:
-                yield response.follow(technique_url, self.parse_techniques)
+            # if technique_url:
+            #     yield response.follow(technique_url, self.parse_techniques)
         # Software Table:
         # softwareTable = response.css('table.table-alternate tr')
         # for index, row in enumerate(softwareTable, start=1):
@@ -266,6 +266,7 @@ class MITREAttackSpider(scrapy.Spider):
             rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
             for row in rows: 
                 id = row.css('td:nth-child(1) a::text').get()
+                references=[]
                 mitigation = row.css('td:nth-child(2) a::text').get()
                 description = row.css('td:nth-child(3) p::text').get()
                 references_tag = 'td:nth-child(3) a'
@@ -278,15 +279,15 @@ class MITREAttackSpider(scrapy.Spider):
                 references_string = ' '.join(references)
                 # mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
                 # technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-                # if id.__contains__('M'):
+                if id.__contains__('M'):
                 
-                #    yield Mitigations({
-                #     'ID': id,
-                #      'TechniqueId':id_,
-                #     'Mitigation': mitigation,
-                #     'Description': description,
-                #    "References": references_string
-                # })
+                   yield Mitigations({
+                    'ID': id,
+                     'TechniqueId':id_,
+                    'Mitigation': mitigation,
+                    'Description': description,
+                   "References": references_string
+                })
 # #         #detections
         # if response.css('h2#detection'):
         #      rows = response.css('table.table.datasources-table.table-bordered tbody tr')
@@ -313,6 +314,7 @@ class MITREAttackSpider(scrapy.Spider):
              rows = response.css('table.table.datasources-table.table-bordered tbody tr')
              for row in rows:
                 # Extract the data from each cell in the row
+                references=[]
                 id = row.css('td:nth-child(1) a::text').get()
                 data_source = row.css('td:nth-child(2) a::text').get()
                 data_component = row.css('td:nth-child(3) a::text').get()
@@ -327,11 +329,11 @@ class MITREAttackSpider(scrapy.Spider):
                 references_string = ' '.join(references)
 
                 # Yield the extracted   data
-                # yield  Detections( {
-                    # 'ID': id,
-                    # 'TechniqueId':id_,
-                    # 'DataSource': data_source,
-                    # 'DataComponent': data_component,
-                    # 'Detects': detects,
-                    # "References": references_string
-                # })
+                yield  Detections( {
+                    'ID': id,
+                    'TechniqueId':id_,
+                    'DataSource': data_source,
+                    'DataComponent': data_component,
+                    'Detects': detects,
+                    "References": references_string
+                })
