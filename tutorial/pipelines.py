@@ -384,7 +384,7 @@ class MySQLPipeline:
                     ex:mitigationName "{item.get('Mitigation')}" ;   
                     ex:description "{description}" ;
                     ex:technique_implements_mitigations "{item.get("TechniqueId")}".
-                    {refs}
+                      {refs}
             }}
             """
         except Exception as e:
@@ -417,7 +417,7 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while creating Mitigations query: {e}")
             return ""
-
+ 
     def create_references(self, references, id, ref_type):
         try:
             links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', references)

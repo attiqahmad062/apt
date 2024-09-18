@@ -25,7 +25,8 @@ NEWSPIDER_MODULE = "tutorial.spiders"
 
 #groups pipe line
 ITEM_PIPELINES = {
-    'tutorial.pipelines.MySQLPipeline': 300,
+    # 'tutorial.pipelines.MySQLPipeline': 300,
+    'tutorial.ner_pipeline.NERPipeline': 400,
 }
 
 ELASTICSEARCH_SETTINGS = {
