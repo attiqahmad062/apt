@@ -2,9 +2,10 @@
 import re
 import scrapy
 from itemadapter import ItemAdapter
+from rdflib import Literal
 from datetime import datetime
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, URLENCODED
-
+import spacy
 GRAPHDB_SETTINGS = {
     'endpoint': 'http://localhost:7200/repositories/etiapt/statements',
     'prefix': 'https://attack.mitre.org/'
@@ -66,6 +67,7 @@ class Detections(scrapy.Item):
 class MySQLPipeline:
     def open_spider(self, spider):
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
+        self.nlp = spacy.load("en_core_web_sm")
         print("Connection to GraphDB established")
     def close_spider(self, spider):
         # GraphDB connection does not need explicit closing
@@ -109,7 +111,29 @@ class MySQLPipeline:
                 group_name = item.get('GroupName', '').replace(' ', '_')
                 associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
-               
+                doc = self.nlp(summary)
+                group_entities = {
+                    "GroupName": "",
+                    "Date": "",
+                    "Country": "",
+                    "Motivation": "",
+                    "Aliases": []
+                }
+                # Extract entities based on labels
+                for ent in doc.ents:
+                    if ent.label_ == "ORG":  # Organization or Group Name
+                        group_entities["GroupName"] = ent.text
+                        print("ORG",ent.text)
+                    elif ent.label_ == "DATE":  # Dates
+                        group_entities["Date"] = ent.text
+                    elif ent.label_ == "GPE":  # Country/Location
+                        group_entities["Country"] = ent.text
+                    elif ent.label_ == "MISC":  # Motivation
+                        group_entities["Motivation"] = ent.text
+                    elif ent.label_ == "PERSON":  # Aliases
+                        group_entities["Aliases"].append(ent.text)
+                print(f"Extracted Group Entities: {group_entities}")
+                self.store_group_entities(mitre_name, group_entities)
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
                         # ex:url "{url}" .
@@ -139,7 +163,7 @@ class MySQLPipeline:
             raise ValueError("Technique ID is missing or empty")
 
         refs = self.create_references(item.get('References'), technique_id, 'technique')
-
+        
         technique_id = escape_string(technique_id)
         technique_name = escape_string(item.get('Name'))
         use = escape_string(item.get('Use'))
@@ -155,7 +179,7 @@ class MySQLPipeline:
                 ex:{technique_id} ex:subId "{sub_id}" .
             }};
             """
-        else:
+        else:  
             # If subId does not exist, delete any existing data with the same technique_id and no subId
             delete_existing = f"""
             DELETE WHERE {{
@@ -175,6 +199,40 @@ class MySQLPipeline:
             {refs}     
         }} 
         """
+        uses = item.get('Use', '').replace('"', '\\"')
+        doc = self.nlp(uses)  # Process the 'Uses' field with spaCy NER
+        technique_entities = {
+            "ORG": [],
+            "Malware": [],
+            "GroupNames": [],
+            "Tools": [],
+            "Tactics": []
+        }
+
+        # Extract entities based on spaCy's entity labels
+        for ent in doc.ents:
+            if ent.label_ == "ORG":  # Organization
+                technique_entities["ORG"].append(ent.text)
+                print("ORG:", ent.text)
+            elif ent.label_ == "MALWARE":  # Malware
+                technique_entities["Malware"].append(ent.text)
+                print("MALWARE:", ent.text)
+            elif ent.label_ == "PERSON":  # Group Names (assuming GROUP as PERSON)
+                technique_entities["GroupNames"].append(ent.text)
+                print("Group Name:", ent.text)
+            elif ent.label_ == "TOOL":  # Tools
+                technique_entities["Tools"].append(ent.text)
+                print("TOOL:", ent.text)
+            elif ent.label_ == "TACTIC":  # Tactics
+                technique_entities["Tactics"].append(ent.text)
+                print("TACTIC:", ent.text)
+
+        # Print extracted technique entities for debugging
+        print(f"Extracted Technique Entities: {technique_entities}")
+
+        # Store the extracted entities into GraphDB via SPARQL queries
+        self.store_technique_entities(technique_id, technique_entities)
+
         return f"""
         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
       
@@ -279,7 +337,6 @@ class MySQLPipeline:
                 techniques_triples = "\n".join(
                     [f'ex:{campaign_id} ex:campaignsTechniques "{escape_string(technique)}" .' for technique in techniques]
                 )
-
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -428,4 +485,146 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while creating references: {e}")
             return ""
-  
+
+
+
+    def store_group_entities(self, group_uri, group_entities):
+        # Ensure group_uri is enclosed in angle brackets if it's a full URI
+        group_uri = f"<https://attack.mitre.org/{group_uri}>"
+        if not group_uri.startswith("<"):
+            group_uri = f"<{group_uri}>"
+
+        # Store Group Name / Organization
+        if group_entities.get("GroupName"):
+            group_name_literal = Literal(group_entities['GroupName']).n3()
+            group_name_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:groupName ?oldName }}
+            INSERT {{ {group_uri} ex:groupName {group_name_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(group_name_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Dates
+        if group_entities.get("Date"):
+            date_literal = Literal(group_entities['Date']).n3()
+            date_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:date ?oldDate }}
+            INSERT {{ {group_uri} ex:date {date_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(date_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Country / Location
+        if group_entities.get("Country"):
+            country_literal = Literal(group_entities['Country']).n3()
+            country_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:country ?oldCountry }}
+            INSERT {{ {group_uri} ex:country {country_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(country_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Motivation (Financial Gain, Trade, etc.)
+        if group_entities.get("Motivation"):
+            motivation_literal = Literal(group_entities['Motivation']).n3()
+            motivation_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:motivation ?oldMotivation }}
+            INSERT {{ {group_uri} ex:motivation {motivation_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(motivation_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Aliases
+        for alias in group_entities.get("Aliases", []):
+            alias_literal = Literal(alias).n3()
+            alias_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:alias ?oldAlias }}
+            INSERT {{ {group_uri} ex:alias {alias_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(alias_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+    def store_technique_entities(self, technique_uri, technique_entities):
+    # Ensure technique_uri is enclosed in angle brackets if it's a full URI
+        technique_uri = f"<https://attack.mitre.org/{technique_uri}>"
+        if not technique_uri.startswith("<"):
+            technique_uri = f"<{technique_uri}>"
+
+        # Store ORG (Organizations)
+        if technique_entities.get("ORG"):
+            org_literal = Literal(technique_entities['ORG']).n3()
+            org_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {technique_uri} ex:org ?oldOrg }}
+            INSERT {{ {technique_uri} ex:org {org_literal} }}
+            WHERE {{ {technique_uri} ex:use ?desc }}
+            """
+            self.sparql.setQuery(org_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Malware
+        if technique_entities.get("Malware"):
+            malware_literal = Literal(technique_entities['Malware']).n3()
+            malware_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {technique_uri} ex:malware ?oldMalware }}
+            INSERT {{ {technique_uri} ex:malware {malware_literal} }}
+            WHERE {{ {technique_uri} ex:use ?desc }}
+            """
+            self.sparql.setQuery(malware_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Group Names
+        if technique_entities.get("GroupNames"):
+            group_name_literal = Literal(technique_entities['GroupNames']).n3()
+            group_name_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {technique_uri} ex:groupName ?oldGroupName }}
+            INSERT {{ {technique_uri} ex:groupName {group_name_literal} }}
+            WHERE {{ {technique_uri} ex:use ?desc }}
+            """
+            self.sparql.setQuery(group_name_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Tools
+        if technique_entities.get("Tools"):
+            tools_literal = Literal(technique_entities['Tools']).n3()
+            tools_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {technique_uri} ex:tools ?oldTools }}
+            INSERT {{ {technique_uri} ex:tools {tools_literal} }}
+            WHERE {{ {technique_uri} ex:use ?desc }}
+            """
+            self.sparql.setQuery(tools_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+
+        # Store Tactics
+        if technique_entities.get("Tactics"):
+            tactics_literal = Literal(technique_entities['Tactics']).n3()
+            tactics_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {technique_uri} ex:tactics ?oldTactics }}
+            INSERT {{ {technique_uri} ex:tactics {tactics_literal} }}
+            WHERE {{ {technique_uri} ex:use ?desc }}
+            """
+            self.sparql.setQuery(tactics_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()

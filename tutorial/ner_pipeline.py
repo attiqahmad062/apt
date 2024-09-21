@@ -1,38 +1,55 @@
 import os
 import spacy
 from SPARQLWrapper import SPARQLWrapper, JSON
-
+import urllib
 GRAPHDB_SETTINGS = {
-    'endpoint': 'http://localhost:7200/repositories/etiapt/statements',
+    'endpoint': 'http://localhost:7200/repositories/etiapt/',
     'prefix': 'https://attack.mitre.org/'
-}
+} 
 
 class NERPipeline:
     def open_spider(self, spider):
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
         print("Connection to GraphDB established for NER")
+        self.sparql.setReturnFormat(JSON)  # Ensure the response format is set to JSON
+        self.sparql.setMethod('POST') 
+        self.sparql.setMethod("GET") 
     def close_spider(self, spider):
         # GraphDB connection does not need explicit closing
         pass
     def process_item(self, item, spider):
         # Step 1: Fetch Group data from GraphDB
         group_query = """
-        PREFIX ex: <https://attack.mitre.org/>
-        SELECT ?group ?description WHERE {
-            ?group ex:description ?description .
-        }
-        """
-        print("result are ",group_query) 
+PREFIX ex: <https://attack.mitre.org/> 
+SELECT ?group ?description
+WHERE {
+    ?group a ex:groups ;  
+           ex:description ?description . 
+}
+"""
         self.sparql.setQuery(group_query)
-        group_results = self.sparql.query().convert()
-        print("result are ",group_results) 
-        # Step 2: Perform NER on Group descriptions
-        for result in group_results["results"]["bindings"]:
-            group_uri = result["group"]["value"]
-            description = result["description"]["value"]
-            print("description is ",description)
-            doc = self.nlp(description)
-       
+        self.sparql.setReturnFormat(JSON)  # Set the return format to JSON
+        doc=[]
+        # Step 1: Execute the query
+        try:
+            group_results = self.sparql.query().convert()
+            print("Raw Group Results:", group_results)  # Debugging: check the raw structure
+
+            # Step 2: Ensure we have the correct structure before proceeding
+            if isinstance(group_results, dict) and "results" in group_results and "bindings" in group_results["results"]:
+                for result in group_results["results"]["bindings"]:
+                    group_uri = result["group"]["value"]
+                    description = result["description"]["value"]
+                    print("description is ", description)
+
+                    # Step 3: Perform NER on description
+                    doc = self.nlp(description)
+                    # Process the NER results here
+            else:
+                print("Unexpected structure in group_results:", group_results)
+
+        except urllib.error.HTTPError as e:
+            print(f"HTTP Error: {e.code} - {e.reason}")
             group_entities = {
                 "GroupName": "",
                 "Date": "",
@@ -40,7 +57,6 @@ class NERPipeline:
                 "Motivation": "",
                 "Aliases": []
             }
-
             # Extract entities based on labels
             for ent in doc.ents:
                 if ent.label_ == "ORG":  # Organization or Group Name
@@ -58,50 +74,11 @@ class NERPipeline:
             print(f"Extracted Group Entities: {group_entities}")
             self.store_group_entities(group_uri, group_entities)
 
-        # Step 5: Fetch Technique data from GraphDB
-        # technique_query = """
-        # PREFIX ex: <https://attack.mitre.org/>
-        # SELECT ?technique ?use WHERE {
-        #     ?technique ex:use ?use .
-        # }
-        # """
-        # self.sparql.setQuery(technique_query)
-        # technique_results = self.sparql.query().convert()
-
-        # # Step 6: Perform NER on Technique "use" field
-        # for result in technique_results["results"]["bindings"]:
-        #     technique_uri = result["technique"]["value"]
-        #     use_description = result["use"]["value"]
-        #     doc = self.nlp(use_description)
-
-        #     technique_entities = {
-        #         "ORG": "",
-        #         "Malware": "",
-        #         "GroupNames": [],
-        #         "Tools": [],
-        #         "Tactics": ""
-        #     }
-
-        #     # Extract entities from the "use" field
-        #     for ent in doc.ents:
-        #         if ent.label_ == "ORG":  # Organizations involved
-        #             technique_entities["ORG"] = ent.text
-        #         elif ent.label_ == "MALWARE":  # Malware used
-        #             technique_entities["Malware"] = ent.text
-        #         elif ent.label_ == "PERSON":  # Group Names
-        #             technique_entities["GroupNames"].append(ent.text)
-        #         elif ent.label_ == "PRODUCT":  # Tools
-        #             technique_entities["Tools"].append(ent.text)
-        #         elif ent.label_ == "TACTIC":  # Tactics
-        #             technique_entities["Tactics"] = ent.text
-
-        #     print(f"Extracted Technique Entities: {technique_entities}")
-        #     self.store_technique_entities(technique_uri, technique_entities)
-
+     
         return item
 
     def  store_group_entities(self, group_uri, group_entities):
-        """Store the NER results for Groups into GraphDB."""
+        # """Store the NER results for Groups into GraphDB."""
         # Construct SPARQL UPDATE query for each property
 
         # Store Group Name (if exists)
@@ -164,7 +141,7 @@ class NERPipeline:
             self.sparql.query()
 
     def store_technique_entities(self, technique_uri, technique_entities):
-        """Store the NER results for Techniques into GraphDB."""
+        # """Store the NER results for Techniques into GraphDB."""
         # Store ORG (if exists)
         if technique_entities["ORG"]:
             org_query = f"""
