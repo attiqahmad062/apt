@@ -19,13 +19,13 @@ class MITREAttackSpider(scrapy.Spider):
             # Creating an absolute URL
             column1_url_absolute = response.urljoin(column1_url.strip()) if column1_url else None
             # Extracting data from the table with class name 'grouptable'
-            yield GroupTable ({
-                'MittreName': column1_data.strip() if column1_data else None,
-                'Url': column1_url_absolute,
-                'GroupName': column2_data.strip() if column2_data else None,
-                'AssociatedGroups': column3_data.strip() if column3_data else None,
-                'Summary': column4_data.strip() if column4_data else None,
-                })
+            # yield GroupTable ({
+            #     'MittreName': column1_data.strip() if column1_data else None,
+            #     'Url': column1_url_absolute,
+            #     'GroupName': column2_data.strip() if column2_data else None,
+            #     'AssociatedGroups': column3_data.strip() if column3_data else None,
+            #     'Summary': column4_data.strip() if column4_data else None,
+            #     })
 
 #             # Follow the URL to the group's page and parse the table data
             if column1_url_absolute:
@@ -87,17 +87,17 @@ class MITREAttackSpider(scrapy.Spider):
 
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             references_string = ' '.join(references)
-            yield TechniquesTable( {
-                'GroupId':id_.strip() if id_data else None,
-                'Domain': domain_data.strip() if domain_data else None,
-                'Name': name_data.strip() if name_data else None,
-                'ID': id_data.strip() if id_data else None,
-                'SubId': sub_id_data.strip() if sub_id_data else None,
-                'Use': use_data if use_data else None,
-                "References": references_string
-            })
-            # if technique_url:
-            #     yield response.follow(technique_url, self.parse_techniques)
+            # yield TechniquesTable( {
+            #     'GroupId':id_.strip() if id_data else None,
+            #     'Domain': domain_data.strip() if domain_data else None,
+            #     'Name': name_data.strip() if name_data else None,
+            #     'ID': id_data.strip() if id_data else None,
+            #     'SubId': sub_id_data.strip() if sub_id_data else None,
+            #     'Use': use_data if use_data else None,
+            #     "References": references_string
+            # })
+            if technique_url:
+                yield response.follow(technique_url, self.parse_techniques)
         # # Software Table:
         softwareTable = response.css('table.table-alternate tr')
         for index, row in enumerate(softwareTable, start=1):
@@ -239,13 +239,13 @@ class MITREAttackSpider(scrapy.Spider):
                                 if href not in references:
                                     references.append(href)
                         references_string = ' '.join(references)
-                    #     yield ProcedureExamples( {
-                    #         'TechniqueId':id_,
-                    #         'ID': id,
-                    #         'Name': name,
-                    #         'Description': description,
-                    #         "References": references_string
-                    # })
+                        yield ProcedureExamples( {
+                            'TechniqueId':id_,
+                            'ID': id,
+                            'Name': name,
+                            'Description': description,
+                            "References": references_string
+                    })
 # #         #mitigations
         # if response.css('h2#mitigations'):
         #     rows = response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]/table')
@@ -279,8 +279,7 @@ class MITREAttackSpider(scrapy.Spider):
                 references_string = ' '.join(references)
                 # mitigation_url = row.css('td:nth-child(2) a::attr(href)').get()
                 # technique_url=response.urljoin(technique_url.strip()) if technique_url else None
-                # if id.__contains__('M'):
-                
+                # if id.__contains__('M'):        
                 #    yield Mitigations({
                 #     'ID': id,
                 #      'TechniqueId':id_,

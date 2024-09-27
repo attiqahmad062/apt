@@ -4,6 +4,12 @@ import scrapy
 from itemadapter import ItemAdapter
 from rdflib import Literal
 from datetime import datetime
+from spacy.language import Language
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+import torch
+# Load the Hugging Face tokenizer and model
+tokenizer = AutoTokenizer.from_pretrained("bnsapa/cybersecurity-ner")
+hf_model = AutoModelForTokenClassification.from_pretrained("bnsapa/cybersecurity-ner")
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, URLENCODED
 import spacy
 GRAPHDB_SETTINGS = {
@@ -64,10 +70,64 @@ class Detections(scrapy.Item):
     Detects = scrapy.Field()
     References=scrapy.Field()
     TechniqueId=scrapy.Field()
+@Language.component("cybersecurity_ner")
+def cybersecurity_ner(doc):
+    tokens = [token.text for token in doc]
+
+    # Tokenize the text using Hugging Face's tokenizer
+    try:
+        inputs = tokenizer(tokens, return_tensors="pt", is_split_into_words=True, truncation=True, padding=True)
+    except Exception as e:
+        print(f"Tokenization error: {e}")
+        return doc
+ 
+    # Get predictions from Hugging Face model
+    with torch.no_grad():
+        outputs = hf_model(**inputs).logits
+
+    # Map the predictions to their corresponding labels
+    predicted_token_class_indices = torch.argmax(outputs, dim=2).squeeze().tolist()
+    predicted_labels = [hf_model.config.id2label[idx] for idx in predicted_token_class_indices]
+
+    # Initialize variables for subword processing
+    subword_mask = inputs.word_ids()
+    previous_word_id = None
+    full_word = ""
+    full_word_label = ""
+
+    for i, token in enumerate(doc):
+        word_id = subword_mask[i]
+
+        if word_id != previous_word_id:
+            # Assign the previous word if needed
+            if previous_word_id is not None and full_word_label:
+                doc[previous_word_id].set_extension("hf_ent_type", default=None, force=True)
+                doc[previous_word_id]._.hf_ent_type = full_word_label
+
+            # Reset for a new word
+            full_word = token.text
+            full_word_label = predicted_labels[i] if predicted_labels[i] != 'O' else ''
+        else:
+            full_word += token.text.replace("##", "")
+
+        previous_word_id = word_id
+
+    # Assign the last word if necessary
+    if previous_word_id is not None and full_word_label:
+        doc[previous_word_id].set_extension("hf_ent_type", default=None, force=True)
+        doc[previous_word_id]._.hf_ent_type = full_word_label
+
+    return doc
+
+# Add the custom Hugging Face NER component at the end of the spaCy pipeline
+
+
 class MySQLPipeline:
     def open_spider(self, spider):
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
         self.nlp = spacy.load("en_core_web_sm")
+        self.nlp.add_pipe("cybersecurity_ner", last=True)
+
         print("Connection to GraphDB established")
     def close_spider(self, spider):
         # GraphDB connection does not need explicit closing
@@ -200,36 +260,41 @@ class MySQLPipeline:
         }} 
         """
         uses = item.get('Use', '').replace('"', '\\"')
-        doc = self.nlp(uses)  # Process the 'Uses' field with spaCy NER
+        doc = self.nlp(uses)
+
+        # Store extracted entities from both models
         technique_entities = {
-            "ORG": [],
-            "Malware": [],
-            "GroupNames": [],
-            "Tools": [],
-            "Tactics": []
+            "ORG": [],         # Organizations (from spaCy)
+            "Malware": [],     # Malware (from Hugging Face)
+            "GroupNames": [],  # Group Names (from spaCy)
+            "Tools": [],       # Tools (from Hugging Face)
+            "Tactics": []      # Tactics (from Hugging Face)
         }
 
-        # Extract entities based on spaCy's entity labels
+        # Extract entities from spaCy's default NER model
         for ent in doc.ents:
-            if ent.label_ == "ORG":  # Organization
+            if ent.label_ == "ORG":
                 technique_entities["ORG"].append(ent.text)
-                print("ORG:", ent.text)
-            elif ent.label_ == "MALWARE":  # Malware
-                technique_entities["Malware"].append(ent.text)
-                print("MALWARE:", ent.text)
-            elif ent.label_ == "PERSON":  # Group Names (assuming GROUP as PERSON)
+            elif ent.label_ == "PERSON":
                 technique_entities["GroupNames"].append(ent.text)
-                print("Group Name:", ent.text)
-            elif ent.label_ == "TOOL":  # Tools
-                technique_entities["Tools"].append(ent.text)
-                print("TOOL:", ent.text)
-            elif ent.label_ == "TACTIC":  # Tactics
-                technique_entities["Tactics"].append(ent.text)
-                print("TACTIC:", ent.text)
+
+        # Extract entities from Hugging Face's custom NER model
+        for token in doc:
+            print("token is ",token.text)
+            # B-Organization
+            if token._.hf_ent_type == "B-Organization":
+                technique_entities["ORG"].append(token.text)
+            if token._.hf_ent_type == "B-Malware":
+                technique_entities["Malware"].append(token.text)
+            elif token._.hf_ent_type == "I-System":
+                technique_entities["Tools"].append(token.text)
+            elif token._.hf_ent_type == "B-System":
+                technique_entities["Tools"].append(token.text)
+            elif token._.hf_ent_type == "TACTIC":
+                technique_entities["Tactics"].append(token.text)
 
         # Print extracted technique entities for debugging
         print(f"Extracted Technique Entities: {technique_entities}")
-
         # Store the extracted entities into GraphDB via SPARQL queries
         self.store_technique_entities(technique_id, technique_entities)
 
@@ -400,7 +465,6 @@ class MySQLPipeline:
         if value is None:
             return ""
         return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
-
      try: 
         procedure_id = escape_string(item.get('ID'))
         if not procedure_id:
@@ -408,6 +472,43 @@ class MySQLPipeline:
         name = escape_string(item.get('Name'))
         description = escape_string(item.get('Description'))
         refs = self.create_references(item.get('References'), procedure_id, 'procedure')
+        doc = self.nlp(description)
+
+        # Store extracted entities from both models
+        procedure_entities = {
+            "ORG": [],         # Organizations (from spaCy)
+            "Malware": [],     # Malware (from Hugging Face)
+            "GroupNames": [],  # Group Names (from spaCy)
+            "Tools": [],       # Tools (from Hugging Face)
+            "Tactics": []      # Tactics (from Hugging Face)
+        }
+
+        # Extract entities from spaCy's default NER model
+        for ent in doc.ents:
+            if ent.label_ == "ORG":
+                procedure_entities["ORG"].append(ent.text)
+            elif ent.label_ == "PERSON":
+                procedure_entities["GroupNames"].append(ent.text)
+
+        # Extract entities from Hugging Face's custom NER model
+        for token in doc:
+            print("token is ",token.text)
+            # B-Organization
+            if token._.hf_ent_type == "B-Organization":
+                procedure_entities["ORG"].append(token.text)
+            if token._.hf_ent_type == "B-Malware":
+                procedure_entities["Malware"].append(token.text)
+            elif token._.hf_ent_type == "I-System":
+                procedure_entities["Tools"].append(token.text)
+            elif token._.hf_ent_type == "B-System":
+                procedure_entities["Tools"].append(token.text)
+            elif token._.hf_ent_type == "TACTIC":
+                procedure_entities["Tactics"].append(token.text)
+
+        # Print extracted technique entities for debugging
+        print(f"Extracted Procedure Entities: {procedure_entities}")
+        # Store the extracted entities into GraphDB via SPARQL queries
+        self.store_procedure_entities(procedure_id, procedure_entities)
         return f"""
         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
         INSERT DATA {{
@@ -434,6 +535,26 @@ class MySQLPipeline:
              raise ValueError("Technique ID is missing or empty") 
             description = escape_string(item.get('Description'))
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
+            if "cybersecurity_ner" not in self.nlp.pipe_names:
+             self.nlp.add_pipe("cybersecurity_ner", last=True)
+            # Sample text to test
+            # Process the text
+            doc = self.nlp(description)
+            mitigation_entities=cybersecurity_ner(doc)
+            print("doc is ",mitigation_entities)
+            # Extract and organize recognized entities
+            # mitigation_entities = {}
+
+            # for token in doc:
+            #     if token.ent_type_:
+            #         # Add the entity type to the mitigation_entities dictionary dynamicall
+            #         mitigation_entities[token.ent_type_].append(token.text)
+
+            # Log the recognized entities for debugging
+            print("Mitigation Entities:", mitigation_entities)
+
+            print("Mitigation Entities:", mitigation_entities)
+            # self.store_mitigation_entities(self, mitigation_id, mitigation_entities)
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
@@ -628,3 +749,145 @@ class MySQLPipeline:
             self.sparql.setQuery(tactics_query)
             self.sparql.setMethod('POST')
             self.sparql.query()
+
+            # storing mitigation entities to graph DB 
+    def store_mitigation_entities(self, mitigation_id, mitigation_entities):
+        mitigation_uri = f"<https://attack.mitre.org/mitigations/{mitigation_id}>"
+
+        # Store Alerting or Reporting entities
+        if mitigation_entities.get("Alerting or Reporting"):
+            for alert in mitigation_entities["Alerting or Reporting"]:
+                alert_literal = Literal(alert).n3()
+                alert_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                DELETE {{ {mitigation_uri} ex:alertingOrReporting ?oldAlert }}
+                INSERT {{ {mitigation_uri} ex:alertingOrReporting {alert_literal} }}
+                WHERE {{ {mitigation_uri} ex:description ?desc }}
+                """
+                self.sparql.setQuery(alert_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+
+        # Store Registry Keys entities
+        if mitigation_entities.get("Registry Keys"):
+            for reg_key in mitigation_entities["Registry Keys"]:
+                reg_key_literal = Literal(reg_key).n3()
+                reg_key_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                DELETE {{ {mitigation_uri} ex:registryKeys ?oldRegKey }}
+                INSERT {{ {mitigation_uri} ex:registryKeys {reg_key_literal} }}
+                WHERE {{ {mitigation_uri} ex:description ?desc }}
+                """
+                self.sparql.setQuery(reg_key_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+
+        # Store Paths entities
+        if mitigation_entities.get("Paths"):
+            for path in mitigation_entities["Paths"]:
+                path_literal = Literal(path).n3()
+                path_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                DELETE {{ {mitigation_uri} ex:paths ?oldPath }}
+                INSERT {{ {mitigation_uri} ex:paths {path_literal} }}
+                WHERE {{ {mitigation_uri} ex:description ?desc }}
+                """
+                self.sparql.setQuery(path_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+    def store_procedure_entities(self, procedure_id, procedure_entities):
+        print("Storing procedure entities for ID:", procedure_id)
+        procedure_uri = f"<https://attack.mitre.org/procedures/{procedure_id}>"
+        
+        # Store ORG entities
+        if procedure_entities.get("ORG"):
+            # for org in procedure_entities["ORG"]:
+                org_literal = Literal(procedure_entities["ORG"]).n3()  # Convert each org to a literal
+                print("Storing ORG:", org_literal)
+                org_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                INSERT DATA {{
+                    {procedure_uri} ex:org {org_literal} .
+                }}
+                """
+                self.sparql.setQuery(org_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+
+        # Store Malware entities
+        if procedure_entities.get("Malware"):
+            # for malware in procedure_entities["Malware"]:
+                malware_literal = Literal(procedure_entities['Malware']).n3()  # Convert each malware to a literal
+                print("Storing Malware:", malware_literal)
+                malware_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                INSERT DATA {{
+                    {procedure_uri} ex:procedureMalware {malware_literal} .
+                }}
+                """
+                self.sparql.setQuery(malware_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+
+        # Store Tools entities
+        if procedure_entities.get("Tools"):
+            # for tool in procedure_entities["Tools"]:
+                tool_literal = Literal(procedure_entities['Tools']).n3()  # Convert each tool to a literal
+                print("Storing Tool:", tool_literal)
+                tool_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                INSERT DATA {{
+                    {procedure_uri} ex:tool {tool_literal} .
+                }}
+                """
+                self.sparql.setQuery(tool_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
+
+
+    # # model for mitigations
+    # @spacy.Language.component("cybersecurity_ner")
+    # def cybersecurity_ner(doc):
+    #     tokens = [token.text for token in doc]
+        
+    #     try:
+    #         inputs = tokenizer(tokens, return_tensors="pt", is_split_into_words=True, truncation=True, padding=True)
+    #     except Exception as e:
+    #         print(f"Tokenization error: {e}")
+    #         return doc
+
+    #     with torch.no_grad():
+    #         outputs = model(**inputs).logits
+
+    #     predicted_token_class_indices = torch.argmax(outputs, dim=2).squeeze().tolist()
+    #     predicted_labels = [model.config.id2label[idx] for idx in predicted_token_class_indices]
+
+    #     subword_mask = inputs.word_ids()
+    #     previous_word_id = None
+    #     full_word_label = ""
+
+    #     for i, token in enumerate(doc):
+    #         word_id = subword_mask[i]
+    #         if word_id != previous_word_id:
+    #             if previous_word_id is not None and full_word_label:
+    #                 doc[previous_word_id].ent_type_ = full_word_label
+    #             full_word_label = predicted_labels[i] if predicted_labels[i] != 'O' else ''
+    #         previous_word_id = word_id
+
+    #     if previous_word_id is not None and full_word_label:
+    #         doc[previous_word_id].ent_type_ = full_word_label
+
+    #     # Additional label handling for mitigation-specific entities
+    #     for token in doc:
+    #         if token.text.lower().startswith("alert") or token.text.lower().startswith("report"):
+    #             token.ent_type_ = "Alerting or Reporting"
+    #         elif "registry key" in token.text.lower():
+    #             token.ent_type_ = "Registry Keys"
+    #         elif token.text.startswith("HKLM\\") or "SOFTWARE" in token.text.upper() or "Microsoft" in token.text:
+    #             token.ent_type_ = "Registry Keys"
+    #         elif token.text.startswith("\\"):
+    #             token.ent_type_ = "Paths"
+
+    #     return doc
+
+
