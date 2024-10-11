@@ -6,6 +6,7 @@ from rdflib import Literal
 from datetime import datetime
 from spacy.language import Language
 from transformers import AutoTokenizer, AutoModelForTokenClassification
+from spacy.tokens import Doc
 import torch
 # Load the Hugging Face tokenizer and model
 tokenizer = AutoTokenizer.from_pretrained("bnsapa/cybersecurity-ner")
@@ -25,7 +26,7 @@ class GroupTable(scrapy.Item):
     Url = scrapy.Field()
 
 class TechniquesTable(scrapy.Item):
-    ID = scrapy.Field()
+    TID = scrapy.Field()
     Use = scrapy.Field()
     Domain = scrapy.Field()  
     References = scrapy.Field()
@@ -33,13 +34,13 @@ class TechniquesTable(scrapy.Item):
     GroupId = scrapy.Field()
     Name = scrapy.Field()
 class SoftwareTable(scrapy.Item):
-    ID = scrapy.Field()
+    SID = scrapy.Field()
     GroupId = scrapy.Field()
     Name = scrapy.Field()
     References = scrapy.Field()
     Techniques = scrapy.Field()
 class CampaignsTable(scrapy.Item):
-    ID = scrapy.Field()
+    CID = scrapy.Field()
     Name = scrapy.Field()
     FirstSeen = scrapy.Field()
     GroupId = scrapy.Field() 
@@ -48,30 +49,84 @@ class CampaignsTable(scrapy.Item):
     Techniques = scrapy.Field()
 
 class SubTechniques(scrapy.Item):
-    ID = scrapy.Field()
+    STID = scrapy.Field()
     Name = scrapy.Field()
 
 class ProcedureExamples(scrapy.Item):
-    ID = scrapy.Field()
+    PID = scrapy.Field()
     Name = scrapy.Field()
     Description = scrapy.Field()
     References=scrapy.Field()
     TechniqueId=scrapy.Field()
 class Mitigations(scrapy.Item):
-    ID = scrapy.Field()
+    MID = scrapy.Field()
     Mitigation = scrapy.Field()
     Description = scrapy.Field()
     References=scrapy.Field()
     TechniqueId=scrapy.Field()
 class Detections(scrapy.Item):
-    ID = scrapy.Field()
+    DID = scrapy.Field()
     DataSource = scrapy.Field()
     DataComponent = scrapy.Field()
     Detects = scrapy.Field()
     References=scrapy.Field()
     TechniqueId=scrapy.Field()
+    # model for mitigations
+
+if not Doc.has_extension("ner_type"):
+    Doc.set_extension("ner_type", default=None)
 @Language.component("cybersecurity_ner")
 def cybersecurity_ner(doc):
+        # Unpack the tuple (doc, type)
+  if doc is None or len(doc) == 0:
+        print("Error: 'doc' is not initialized or is empty.")
+        return doc  # Return the empty doc to avoid further issues    
+  ner_type = doc._.ner_type
+  print("type - : ",ner_type)
+    # Mitigation-specific processing
+  if ner_type == "mitigations":
+        tokens = [token.text for token in doc]
+        try:
+            inputs = tokenizer(tokens, return_tensors="pt", is_split_into_words=True, truncation=True, padding=True)
+        except Exception as e:
+            print(f"Tokenization error: {e}")
+            return doc
+
+        with torch.no_grad():
+            outputs = hf_model (**inputs).logits
+
+        predicted_token_class_indices = torch.argmax(outputs, dim=2).squeeze().tolist()
+        predicted_labels = [hf_model.config.id2label[idx] for idx in predicted_token_class_indices]
+
+        subword_mask = inputs.word_ids()
+        previous_word_id = None
+        full_word_label = ""
+
+        for i, token in enumerate(doc):
+            word_id = subword_mask[i]
+            if word_id != previous_word_id:
+                if previous_word_id is not None and full_word_label:
+                    doc[previous_word_id].ent_type_ = full_word_label
+                full_word_label = predicted_labels[i] if predicted_labels[i] != 'O' else ''
+            previous_word_id = word_id
+
+        if previous_word_id is not None and full_word_label:
+            doc[previous_word_id].ent_type_ = full_word_label
+
+        # Additional label handling for mitigation-specific entities
+        for token in doc:
+            if token.text.lower().startswith("alert") or token.text.lower().startswith("report"):
+                token.ent_type_ = "Alerting or Reporting"
+                print("i got alert")
+            elif "registry key" in token.text.lower():
+                token.ent_type_ = "Registry Keys"
+            elif token.text.startswith("HKLM\\") or "SOFTWARE" in token.text.upper() or "Microsoft" in token.text:
+                token.ent_type_ = "Registry Keys"
+            elif token.text.startswith("\\"):
+                token.ent_type_ = "Paths"
+
+        return doc
+  else:    
     tokens = [token.text for token in doc]
 
     # Tokenize the text using Hugging Face's tokenizer
@@ -127,7 +182,6 @@ class MySQLPipeline:
         self.sparql = SPARQLWrapper(GRAPHDB_SETTINGS['endpoint'])
         self.nlp = spacy.load("en_core_web_sm")
         self.nlp.add_pipe("cybersecurity_ner", last=True)
-
         print("Connection to GraphDB established")
     def close_spider(self, spider):
         # GraphDB connection does not need explicit closing
@@ -166,33 +220,55 @@ class MySQLPipeline:
         except Exception as e:
             print(f"An error occurred while executing SPARQL query: {e}")
     def create_group_table_query(self, item):
-            try:
+        try:
                 mitre_name = item.get('MittreName', '').replace('"', '\\"')
                 group_name = item.get('GroupName', '').replace(' ', '_')
                 associated_groups = item.get('AssociatedGroups', '').replace('"', '\\"')
                 summary = item.get('Summary', '').replace('"', '\\"')
                 doc = self.nlp(summary)
+
                 group_entities = {
                     "GroupName": "",
                     "Date": "",
-                    "Country": "",
+                    "group_belongs_to_country": "",
+                    "group_attacked_country": [],
                     "Motivation": "",
                     "Aliases": []
                 }
+
+                country_found = False
+                date_found = False
+
                 # Extract entities based on labels
                 for ent in doc.ents:
                     if ent.label_ == "ORG":  # Organization or Group Name
                         group_entities["GroupName"] = ent.text
-                        print("ORG",ent.text)
-                    elif ent.label_ == "DATE":  # Dates
+                        print("ORG:", ent.text)
+
+                    elif ent.label_ == "DATE" and not date_found:  # Store only the first date
                         group_entities["Date"] = ent.text
+                        date_found = True
+                        print("DATE:", ent.text)
+
                     elif ent.label_ == "GPE":  # Country/Location
-                        group_entities["Country"] = ent.text
+                        if not country_found:  # First country as 'group_belongs_to_country'
+                            group_entities["group_belongs_to_country"] = ent.text
+                            country_found = True
+                            print("Belongs to Country:", ent.text)
+                        else:  # Subsequent country as 'group_attacked_country'
+                            group_entities["group_attacked_country"].append(ent.text)
+                            print("Attacked Country:", ent.text)
+
                     elif ent.label_ == "MISC":  # Motivation
                         group_entities["Motivation"] = ent.text
+                        print("Motivation:", ent.text)
+
                     elif ent.label_ == "PERSON":  # Aliases
                         group_entities["Aliases"].append(ent.text)
+                        print("Alias:", ent.text)
+
                 print(f"Extracted Group Entities: {group_entities}")
+
                 self.store_group_entities(mitre_name, group_entities)
                 # url = item.get('Url', '').replace('"', '\\"')
  # ex:associatedGroups "{associated_groups}" ;
@@ -207,7 +283,7 @@ class MySQLPipeline:
                         ex:associatedGroups  "{associated_groups}" .
                 }}
                 """
-            except Exception as e:
+        except Exception as e:
                 print(f"An error occurred while creating GroupTable query: {e}")
                 return ""
             
@@ -218,7 +294,7 @@ class MySQLPipeline:
             return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
 
      try:
-        technique_id = item.get('ID')
+        technique_id = item.get('TID')
         if not technique_id:
             raise ValueError("Technique ID is missing or empty")
 
@@ -248,17 +324,26 @@ class MySQLPipeline:
             }};
             """
         insert_new = f"""
-        INSERT DATA {{
-            ex:{technique_id} a ex:techniques ;
-            ex:domain "{domain}" ;
-            ex:subId "{sub_id}" ;
-            ex:techniqueName "{technique_name}" ;
-            ex:techniqueId "{technique_id}" ;
-            ex:group_uses_techniques "{group_id}";
-            ex:use "{use}" .
-            {refs}     
-        }} 
-        """
+    INSERT {{
+        ex:{technique_id} a ex:techniques ;
+        ex:domain "{domain}" ;
+        ex:subId "{sub_id}" ;
+        ex:techniqueName "{technique_name}" ;
+        ex:techniqueId "{technique_id}" ;
+        ex:group_uses_techniques "{group_id}" .
+        ex:{technique_id} ex:use "{use}" .
+        {refs} 
+    }}
+    WHERE {{
+        FILTER NOT EXISTS {{
+            ex:{technique_id} ex:group_uses_techniques "{group_id}" .
+          
+        }}
+    }}
+"""
+
+
+
         uses = item.get('Use', '').replace('"', '\\"')
         doc = self.nlp(uses)
 
@@ -268,7 +353,7 @@ class MySQLPipeline:
             "Malware": [],     # Malware (from Hugging Face)
             "GroupNames": [],  # Group Names (from spaCy)
             "Tools": [],       # Tools (from Hugging Face)
-            "Tactics": []      # Tactics (from Hugging Face)
+            "Tactics": []        # Tactics (from Hugging Face)
         }
 
         # Extract entities from spaCy's default NER model
@@ -349,7 +434,7 @@ class MySQLPipeline:
     def create_software_table_query(self, item):
         try:
             #  ex:techniques "{item.get('Techniques')}" .
-            software_id = item.get('ID')
+            software_id = item.get('SID')
             refs = self.create_references(item.get('References'), software_id, 'software')
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
@@ -390,7 +475,7 @@ class MySQLPipeline:
                 return date_string
 
         try:
-            campaign_id = escape_string(item.get('ID'))
+            campaign_id = escape_string(item.get('CID'))
             first_seen = format_date(escape_string(item.get('FirstSeen')))
             last_seen = format_date(escape_string(item.get('LastSeen')))
             techniques = item.get('Techniques')
@@ -466,7 +551,7 @@ class MySQLPipeline:
             return ""
         return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
      try: 
-        procedure_id = escape_string(item.get('ID'))
+        procedure_id = escape_string(item.get('PID'))
         if not procedure_id:
             raise ValueError("Technique ID is missing or empty")
         name = escape_string(item.get('Name'))
@@ -504,15 +589,17 @@ class MySQLPipeline:
                 procedure_entities["Tools"].append(token.text)
             elif token._.hf_ent_type == "TACTIC":
                 procedure_entities["Tactics"].append(token.text)
-
+        for key in procedure_entities:
+         procedure_entities[key] = ', '.join(procedure_entities[key])
         # Print extracted technique entities for debugging
         print(f"Extracted Procedure Entities: {procedure_entities}")
         # Store the extracted entities into GraphDB via SPARQL queries
         self.store_procedure_entities(procedure_id, procedure_entities)
+        procedure_uri = f"<https://attack.mitre.org/procedures/{procedure_id}>"
         return f"""
         PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
         INSERT DATA {{
-            ex:{procedure_id} a ex:procedures ;
+            {procedure_uri} a ex:procedures ;
                 ex:procedureName  "{name}" ;
                 ex:technique_implements_procedures "{item.get("TechniqueId")}";
                 ex:description "{description}" .
@@ -530,18 +617,43 @@ class MySQLPipeline:
                 return ""
             return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
         try:
-            mitigation_id = escape_string(item.get('ID'))
+            mitigation_id = escape_string(item.get('MID'))
             if not mitigation_id :
              raise ValueError("Technique ID is missing or empty") 
             description = escape_string(item.get('Description'))
             refs = self.create_references(item.get('References'), mitigation_id, 'mitigation')
-            if "cybersecurity_ner" not in self.nlp.pipe_names:
-             self.nlp.add_pipe("cybersecurity_ner", last=True)
+           
             # Sample text to test
             # Process the text
+   
+            ner_type = "mitigations"
             doc = self.nlp(description)
-            mitigation_entities=cybersecurity_ner(doc)
+            doc._.ner_type = ner_type
+            doc = self.nlp(doc)
+            # doc = self.nlp(description)
+            mitigation_entities = {
+            "Alerting or Reporting": [],         # Organizations (from spaCy)
+            "Registry Keys": [],     # Malware (from Hugging Face)
+            "Paths": [],  # Group Names (from spaCy)
+        }
             print("doc is ",mitigation_entities)
+            for token in doc:
+                print("token is ",token.text)
+            # B-Organization
+                if token._.hf_ent_type == "Alerting or Reporting":
+                    mitigation_entities["Alerting or Reporting"].append(token.text)
+                if token._.hf_ent_type == "Registry Keys":
+                    mitigation_entities["Registry Keys"].append(token.text)
+                elif token._.hf_ent_type == "Paths":
+                    mitigation_entities["Paths"].append(token.text)
+                # if token.text.lower().startswith("alert") or token.text.lower().startswith("report"):
+                #      mitigation_entities["Alerting or Reporting"].append(token.text)
+                # elif "registry key" in token.text.lower():
+                #     token.hf_ent_type = "Registry Keys"
+                # elif token.text.startswith("HKLM\\") or "SOFTWARE" in token.text.upper() or "Microsoft" in token.text:
+                #     mitigation_entities["Registry Keys"].append(token.text)
+                # elif token.text.startswith("\\"):
+                #     mitigation_entities["Paths"].append(token.text)
             # Extract and organize recognized entities
             # mitigation_entities = {}
 
@@ -551,14 +663,15 @@ class MySQLPipeline:
             #         mitigation_entities[token.ent_type_].append(token.text)
 
             # Log the recognized entities for debugging
-            print("Mitigation Entities:", mitigation_entities)
+
 
             print("Mitigation Entities:", mitigation_entities)
-            # self.store_mitigation_entities(self, mitigation_id, mitigation_entities)
+            # self.store_mitigation_entities(mitigation_id, mitigation_entities)
+            mtigation_uri = f"<https://attack.mitre.org/mitigations/{mitigation_id}>"
             return f"""
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{mitigation_id} a ex:mitigations ;
+                ex:{mtigation_uri} a ex:mitigations ;
                     ex:mitigationName "{item.get('Mitigation')}" ;   
                     ex:description "{description}" ;
                     ex:technique_implements_mitigations "{item.get("TechniqueId")}".
@@ -575,15 +688,54 @@ class MySQLPipeline:
             return value.strip().replace("\\", "\\\\").replace("\"", "\\\"")
         try:
             detects = escape_string(item.get('Detects'))
-            detection_id = escape_string(item.get('ID'))
+            detection_id = escape_string(item.get('DID'))
             if not detection_id :
              raise ValueError("Technique ID is missing or empty") 
            
             refs = self.create_references(item.get('References'), detection_id, 'detection')
+            doc = self.nlp(detects)
+
+            # Store extracted entities from both models
+            detection_entities = {
+                "ORG": [],         # Organizations (from spaCy)
+                "Malware": [],     # Malware (from Hugging Face)
+                "GroupNames": [],  # Group Names (from spaCy)
+                "Tools": [],       # Tools (from Hugging Face)
+                "Tactics": []      # Tactics (from Hugging Face)
+            }
+
+            # Extract entities from spaCy's default NER model
+            for ent in doc.ents:
+                if ent.label_ == "ORG":
+                    detection_entities["ORG"].append(ent.text)
+                elif ent.label_ == "PERSON":
+                    detection_entities["GroupNames"].append(ent.text)
+
+            # Extract entities from Hugging Face's custom NER model
+            for token in doc:
+                print("token is ",token.text)
+                # B-Organization
+                if token._.hf_ent_type == "B-Organization":
+                    detection_entities["ORG"].append(token.text)
+                if token._.hf_ent_type == "B-Malware":
+                    detection_entities["Malware"].append(token.text)
+                elif token._.hf_ent_type == "I-System":
+                    detection_entities["Tools"].append(token.text)
+                elif token._.hf_ent_type == "B-System":
+                    detection_entities["Tools"].append(token.text)
+                elif token._.hf_ent_type == "TACTIC":
+                    detection_entities["Tactics"].append(token.text)
+            for key in detection_entities:
+                detection_entities[key] = ', '.join(detection_entities[key])
+            # Print extracted technique entities for debugging
+            print(f"Extracted Procedure Entities: {detection_entities}")
+            # Store the extracted entities into GraphDB via SPARQL queries
+            self.store_detection_entities(detection_id, detection_entities)
+            detection_uri = f"<https://attack.mitre.org/detections/{detection_id}>"
             return f""" 
             PREFIX ex: <{GRAPHDB_SETTINGS['prefix']}>
             INSERT DATA {{
-                ex:{item.get('ID')} a ex:detections ;
+                {detection_uri} a ex:detections ;
                     ex:detectionId "{detection_id}";
                     ex:dataSource "{item.get('DataSource')}" ;
                     ex:detects "{detects}" ;
@@ -641,13 +793,24 @@ class MySQLPipeline:
             self.sparql.setMethod('POST')
             self.sparql.query()
 
-        # Store Country / Location
-        if group_entities.get("Country"):
-            country_literal = Literal(group_entities['Country']).n3()
+        # Store Country / Location group_attacked_country
+        if group_entities.get("group_belongs_to_country"):
+            country_literal = Literal(group_entities['group_belongs_to_country']).n3()
             country_query = f"""
             PREFIX ex: <https://attack.mitre.org/>
-            DELETE {{ {group_uri} ex:country ?oldCountry }}
-            INSERT {{ {group_uri} ex:country {country_literal} }}
+            DELETE {{ {group_uri} ex:group_belongs_to_country ?oldCountry }}
+            INSERT {{ {group_uri} ex:group_belongs_to_country {country_literal} }}
+            WHERE {{ {group_uri} ex:description ?desc }}
+            """ 
+            self.sparql.setQuery(country_query)  
+            self.sparql.setMethod('POST')
+            self.sparql.query()
+        if group_entities.get("group_attacked_country"):
+            country_literal = Literal(group_entities['group_attacked_country']).n3()
+            country_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {group_uri} ex:group_attacked_country ?oldCountry }}
+            INSERT {{ {group_uri} ex:group_attacked_country {country_literal} }}
             WHERE {{ {group_uri} ex:description ?desc }}
             """
             self.sparql.setQuery(country_query)
@@ -806,12 +969,12 @@ class MySQLPipeline:
                 print("Storing ORG:", org_literal)
                 org_query = f"""
                 PREFIX ex: <https://attack.mitre.org/>
-                INSERT DATA {{
-                    {procedure_uri} ex:org {org_literal} .
-                }}
+                 DELETE {{ {procedure_uri} ex:org ?oldCountry }}
+                INSERT  {{ {procedure_uri} ex:org {org_literal} }} 
+                WHERE {{ {procedure_uri} ex:description ?desc }}
                 """
                 self.sparql.setQuery(org_query)
-                self.sparql.setMethod('POST')
+                self.sparql.setMethod('POST' )
                 self.sparql.query()
 
         # Store Malware entities
@@ -821,9 +984,9 @@ class MySQLPipeline:
                 print("Storing Malware:", malware_literal)
                 malware_query = f"""
                 PREFIX ex: <https://attack.mitre.org/>
-                INSERT DATA {{
-                    {procedure_uri} ex:procedureMalware {malware_literal} .
-                }}
+                 DELETE {{ {procedure_uri} ex:procedureMalware ?oldCountry }}
+                INSERT  {{ {procedure_uri}  ex:procedureMalware {malware_literal}  }}
+                  WHERE {{ {procedure_uri} ex:description ?desc }}
                 """
                 self.sparql.setQuery(malware_query)
                 self.sparql.setMethod('POST')
@@ -836,58 +999,155 @@ class MySQLPipeline:
                 print("Storing Tool:", tool_literal)
                 tool_query = f"""
                 PREFIX ex: <https://attack.mitre.org/>
-                INSERT DATA {{
-                    {procedure_uri} ex:tool {tool_literal} .
+             DELETE {{ {procedure_uri} ex:tool ?oldCountry }}
+                INSERT  {{
+                    {procedure_uri} ex:tool {tool_literal}  
+
                 }}
+              WHERE {{ {procedure_uri} ex:description ?desc }} 
                 """
                 self.sparql.setQuery(tool_query)
                 self.sparql.setMethod('POST')
+                try:
+            # Execute the query
+                    self.sparql.query()
+                    print("Tool stored successfully.")
+                except Exception as e:
+                    print("Error executing SPARQL query:", e)
+ 
+# Store Detections  in Graph DB
+    def store_detection_entities(self, detection_id, detection_entities):
+        print("Storing procedure entities for ID:", detection_id)
+        detection_uri = f"<https://attack.mitre.org/detections/{detection_id}>"
+        
+        # Store ORG entities
+        if detection_entities.get("ORG"):
+            # for org in procedure_entities["ORG"]:
+                org_literal = Literal(detection_entities["ORG"]).n3()  # Convert each org to a literal
+                print("Storing ORG:", org_literal)
+                org_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                 DELETE {{ {detection_uri} ex:detectsORG ?OlddetectsORG }}
+                INSERT  {{ {detection_uri} ex:detectsORG {org_literal} }} 
+                WHERE {{ {detection_uri} ex:detects ?desc }} 
+                """
+                self.sparql.setQuery(org_query)
+                self.sparql.setMethod('POST' )
                 self.sparql.query()
 
+        # Store Malware entities
+        if detection_entities.get("Malware"):
+            # for malware in procedure_entities["Malware"]:
+                malware_literal = Literal(detection_entities['Malware']).n3()  # Convert each malware to a literal
+                print("Storing Malware:", malware_literal)
+                malware_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+                 DELETE {{ {detection_uri} ex:detectsMalware ?OlddetectsMalware }}
+                INSERT  {{ {detection_uri}  ex:detectsMalware {malware_literal}  }}
+                WHERE {{ {detection_uri} ex:detects ?desc }} 
+                """
+                self.sparql.setQuery(malware_query)
+                self.sparql.setMethod('POST')
+                self.sparql.query()
 
-    # # model for mitigations
-    # @spacy.Language.component("cybersecurity_ner")
-    # def cybersecurity_ner(doc):
-    #     tokens = [token.text for token in doc]
-        
-    #     try:
-    #         inputs = tokenizer(tokens, return_tensors="pt", is_split_into_words=True, truncation=True, padding=True)
-    #     except Exception as e:
-    #         print(f"Tokenization error: {e}")
-    #         return doc
+        # Store Tools entities
+        if detection_entities.get("Tools"):
+            # for tool in procedure_entities["Tools"]:
+                tool_literal = Literal(detection_entities['Tools']).n3()  # Convert each tool to a literal
+                print("Storing Tool:", tool_literal)
+                tool_query = f"""
+                PREFIX ex: <https://attack.mitre.org/>
+             DELETE {{ {detection_uri} ex:detectsTool ?olddetectsTool }}
+                INSERT  {{
+                    {detection_uri} ex:detectsTool {tool_literal}  
 
-    #     with torch.no_grad():
-    #         outputs = model(**inputs).logits
+                }}
+             WHERE {{ {detection_uri} ex:detects ?desc }} 
+                """
+                self.sparql.setQuery(tool_query)
+                self.sparql.setMethod('POST')
+                try:
+            # Execute the query
+                    self.sparql.query()
+                    print("Tool stored successfully.")
+                except Exception as e:
+                    print("Error executing SPARQL query:", e)
+    def store_campaigns_entities(self,campaigns_uri , campaigns_entities):
+        # Ensure group_uri is enclosed in angle brackets if it's a full URI
+        campaigns_uri = f"<https://attack.mitre.org/campaigns/{campaigns_uri}>"
+        if not campaigns_uri.startswith("<"):
+            campaigns_uri = f"<{campaigns_uri}>"
 
-    #     predicted_token_class_indices = torch.argmax(outputs, dim=2).squeeze().tolist()
-    #     predicted_labels = [model.config.id2label[idx] for idx in predicted_token_class_indices]
+        # Store Group Name / Organization
+        if campaigns_entities.get("GroupName"):
+            campaigns_name_literal = Literal(campaigns_entities['GroupName']).n3()
+            campaigns_name_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {campaigns_uri} ex:groupName ?oldName }}
+            INSERT {{ {campaigns_uri} ex:groupName {campaigns_name_literal} }}
+            WHERE {{ {campaigns_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(campaigns_name_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
 
-    #     subword_mask = inputs.word_ids()
-    #     previous_word_id = None
-    #     full_word_label = ""
+        # Store Dates
+        if campaigns_entities.get("Date"):
+            date_literal = Literal(campaigns_entities['Date']).n3()
+            date_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {campaigns_uri} ex:date ?oldDate }}
+            INSERT {{ {campaigns_uri} ex:date {date_literal} }}
+            WHERE {{ {campaigns_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(date_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
 
-    #     for i, token in enumerate(doc):
-    #         word_id = subword_mask[i]
-    #         if word_id != previous_word_id:
-    #             if previous_word_id is not None and full_word_label:
-    #                 doc[previous_word_id].ent_type_ = full_word_label
-    #             full_word_label = predicted_labels[i] if predicted_labels[i] != 'O' else ''
-    #         previous_word_id = word_id
+        # Store Country / Location
+        if campaigns_entities.get("Country"):
+            country_literal = Literal(campaigns_entities['Country']).n3()
+            country_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {campaigns_uri} ex:country ?oldCountry }}
+            INSERT {{ {campaigns_uri} ex:country {country_literal} }}
+            WHERE {{ {campaigns_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(country_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
 
-    #     if previous_word_id is not None and full_word_label:
-    #         doc[previous_word_id].ent_type_ = full_word_label
+        # Store Motivation (Financial Gain, Trade, etc.)
+        if campaigns_entities.get("Motivation"):
+            motivation_literal = Literal(campaigns_entities['Motivation']).n3()
+            motivation_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {campaigns_uri} ex:motivation ?oldMotivation }}
+            INSERT {{ {campaigns_uri} ex:motivation {motivation_literal} }}
+            WHERE {{ {campaigns_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(motivation_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
 
-    #     # Additional label handling for mitigation-specific entities
-    #     for token in doc:
-    #         if token.text.lower().startswith("alert") or token.text.lower().startswith("report"):
-    #             token.ent_type_ = "Alerting or Reporting"
-    #         elif "registry key" in token.text.lower():
-    #             token.ent_type_ = "Registry Keys"
-    #         elif token.text.startswith("HKLM\\") or "SOFTWARE" in token.text.upper() or "Microsoft" in token.text:
-    #             token.ent_type_ = "Registry Keys"
-    #         elif token.text.startswith("\\"):
-    #             token.ent_type_ = "Paths"
+        # Store Aliases
+        for alias in campaigns_entities.get("Aliases", []):
+            alias_literal = Literal(alias).n3()
+            alias_query = f"""
+            PREFIX ex: <https://attack.mitre.org/>
+            DELETE {{ {campaigns_uri} ex:alias ?oldAlias }}
+            INSERT {{ {campaigns_uri} ex:alias {alias_literal} }}
+            WHERE {{ {campaigns_uri} ex:description ?desc }}
+            """
+            self.sparql.setQuery(alias_query)
+            self.sparql.setMethod('POST')
+            self.sparql.query()
 
-    #     return doc
+# Store Detections 
 
 
+
+
+
+
+ 
