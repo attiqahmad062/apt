@@ -766,7 +766,6 @@ class MySQLPipeline:
         group_uri = f"<https://attack.mitre.org/{group_uri}>"
         if not group_uri.startswith("<"):
             group_uri = f"<{group_uri}>"
-
         # Store Group Name / Organization
         if group_entities.get("GroupName"):
             group_name_literal = Literal(group_entities['GroupName']).n3()
@@ -779,7 +778,6 @@ class MySQLPipeline:
             self.sparql.setQuery(group_name_query)
             self.sparql.setMethod('POST')
             self.sparql.query()
-
         # Store Dates
         if group_entities.get("Date"):
             date_literal = Literal(group_entities['Date']).n3()
