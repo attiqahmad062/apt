@@ -1,81 +1,51 @@
 import scrapy
 import re
-import os
 from scrapy import Request
+import PyPDF2
+import os
 references = []
 from tutorial.pipelines import GroupTable, TechniquesTable,SoftwareTable,CampaignsTable,SubTechniques,ProcedureExamples,Mitigations ,Detections
 class MITREAttackSpider(scrapy.Spider):
     name = 'mitreattack'
     start_urls = ['https://attack.mitre.org/groups/']
-    # def save_pdf(self, response):
-    #         # Save PDF locally
-    #         filename = os.path.join('pdfs', os.path.basename(response.url))
-    #         with open(filename, 'wb') as f:
-    #             f.write(response.body)
-    #         self.log(f"Saved PDF {filename}")
-
-    # def parse_html_reference(self, response):
-    # # Extract the HTML title and body
-        
-    #     title = response.css('title::text').get(default='No Title')
-    #     body = ' '.join(response.css('body *::text').getall()).strip()
-    #     print("body is ",body)
-    #     if not body:
-    #         self.log(f"Body content is missing for {response.url}. Verify if JavaScript is required.")
-    #     else:
-    #         self.log(f"Processed HTML Reference: {title}")
-    #         # Save or further process the body content as needed
-    #         with open(f"html_refs/{os.path.basename(response.url)}.txt", "w") as f:
-    #             f.write(f"Title: {title}\n\nBody:\n{body}")
-    def save_pdf(self, response, references_string):
-        pdf_name = response.url.split('/')[-1]
-        # with open(pdf_name, 'wb') as pdf_file:
-        #     pdf_file.write(response.body)
-        # self.log(f"Saved PDF: {pdf_name}")
-        # references_string.append(response.body.decode('utf-8', errors='ignore'))  # Decoding might fail for binary content
+    def extract_text_from_pdf(self, pdf_content):
+        try:
+            from PyPDF2 import PdfReader
+            pdf_reader = PdfReader(io.BytesIO(pdf_content))
+            return " ".join(page.extract_text() for page in pdf_reader.pages)
+        except Exception as e:
+            self.log(f"Error extracting text from PDF: {e}")
+            return ""
+    def save_pdf(self, response):
+        pdf_text = self.extract_text_from_pdf(response.body)
+        if pdf_text:
+            references.append({"link": response.url, "body": pdf_text.strip()})
 
     def parse_html_reference(self, response):
         title = response.css('title::text').get(default='No Title')
         body = ' '.join(response.css('body *::text').getall()).strip()
-        print("body is ",body)
+        # print("body is ",body)
         if not body:
                 self.log(f"Body content is missing for {response.url}. Verify if JavaScript is required.")
         else:
                 self.log(f"Processed HTML Reference: {title}")
-                # Save or further process the body content as needed
+                 # Save or further process the body content as needed
                 # with open(f"html_refs/{os.path.basename(response.url)}.txt", "w") as f:
                 #  f.write(f"Title:")
                 # content = body.decode('utf-8')
                 # references_string.append(["body",content])
+                # references.append({"link": response.url, "body": body})
                 existing_ref = next((ref for ref in references if ref['link'] == response.url), None)
                 if not existing_ref:
                     # Add a new reference if it doesn't exist
-                    print("Appending reference: ", response.url, body.strip())
-                    references.append({"link": response.url, "body": body.strip()})
+                    # print("Appending reference: ", response.url, body.strip())
+                    references.append({"link": response.url, "body": body})
                 else:
                     # Update the body if the reference already exists
-                    print("Updating existing reference: ", response.url, body.strip())
+                    print("Updating existing reference: ", response.url)
                     existing_ref['body'] = body.strip()
                 self.log(f"Parsed HTML content from: {response.url}")
-                self.log(f"Parsed HTML content from: {body}")
-        # yield ( {
-        #         # 'GroupId':id_.strip() if id_data else None,
-        #         # 'Domain': domain_data.strip() if domain_data else None,
-        #         # 'Name': name_data.strip() if name_data else None,
-        #         # 'TID': id_data.strip() if id_data else None,
-        #         # 'SubId': sub_id_data.strip() if sub_id_data else None,
-        #         # 'Use': use_data if use_data else None,
-        #         "References": references
-        #     })
-    #     if text and text.strip().startswith('[') and text.strip().endswith(']'):
-    # # Check if the link already exists in the references list
-    # existing_ref = next((ref for ref in references if ref['link'] == href), None)
-    # if not existing_ref:
-    #     references.append({"link": href, "body": text.strip()})  # Add the reference with its body
-    # else:
-    #     # Update the body if the reference already exists (optional, if body might differ)
-    #     existing_ref['body'] = text.strip()
-
+                # self.log(f"Parsed HTML content from: {body}")
     def parse(self, response):# crawl the main page of groups
         # Extracting data from the table with class name 'table'
         groupTable = response.css('table.table tr')
@@ -137,31 +107,6 @@ class MITREAttackSpider(scrapy.Spider):
             technique_url = row.css('td:nth-child(2) a::attr(href)').get()
             # references = []   
 
-            # if len(row.css('td')) >= 5:
-            #     sub_id_data = row.css('td:nth-child(3) a::text').get()
-            #     name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-            #     use_data = ' '.join(row.css('td:nth-child(5) *::text').getall()).strip()
-            #     references_tag = 'td:nth-child(5) a'
-            # else:
-            #     sub_id_data = None
-            #     name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
-            #     use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
-            #     references_tag = 'td:nth-child(4) a'
-
-            # # Extract references only from the current row
-            # for link in row.css(references_tag):
-            #     href = link.css('::attr(href)').get()
-            #     text = link.css('::text').get()
-
-            #     if text and text.strip().startswith('[') and text.strip().endswith(']'):
-            #         if href not in references:
-            #             references.append(href)
-
-            # technique_url = response.urljoin(technique_url.strip()) if technique_url else None
-            # references_string = ' '.join(references)
-            # Inside your Scrapy Spider class
-
-            
             if len(row.css('td')) >= 5:
                 sub_id_data = row.css('td:nth-child(3) a::text').get()
                 name_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
@@ -172,41 +117,28 @@ class MITREAttackSpider(scrapy.Spider):
                 name_data = ' '.join(row.css('td:nth-child(3) *::text').getall()).strip()
                 use_data = ' '.join(row.css('td:nth-child(4) *::text').getall()).strip()
                 references_tag = 'td:nth-child(4) a'
+
             # Extract references only from the current row
             for link in row.css(references_tag):
                 href = link.css('::attr(href)').get()
                 text = link.css('::text').get()
+
                 if text and text.strip().startswith('[') and text.strip().endswith(']'):
-                    if not any(ref['link'] == href for ref in references):
-                        ref = href
-                        references.append({"link": href, "body": ""})
-                        if ref.endswith('.pdf'):
-                            self.log(f"Queuing PDF download: {ref}")
-                            yield Request(ref, callback=self.save_pdf, cb_kwargs={'ref_obj': ref_obj})
-                        elif ref.endswith('.html') or ref.endswith('.htm'):
-                            self.log(f"Queuing HTML parsing: {ref}")
-                            yield Request(ref, callback=self.parse_html_reference)
-                            
-                        else:
-                            self.log(f"Unsupported file type: {ref}")  
-                            self.log(f"Skipping unsupported reference type: {ref}")
-            # Process the references
-            # for ref_obj in references:
-                # ref = ref_obj['link']  # Extract the link
-                # if ref.endswith('.pdf'):
-                #     self.log(f"Queuing PDF download: {ref}")
-                #     yield Request(ref, callback=self.save_pdf, cb_kwargs={'ref_obj': ref_obj})
-                # elif ref.endswith('.html') or ref.endswith('.htm'):
-                #     self.log(f"Queuing HTML parsing: {ref}")
-                #     yield Request(ref, callback=self.parse_html_reference, cb_kwargs={'references': references})
-                    
-                # else:
-                #     self.log(f"Unsupported file type: {ref}")  
-                #     self.log(f"Skipping unsupported reference type: {ref}")
+                        if not any(ref['link'] == href for ref in references):
+                            ref = href
+                            # references.append({"link": href, "body": ""})
+                            if ref.endswith('.pdf'):
+                                self.log(f"Queuing PDF download: {ref}")
+                                yield Request(ref, callback=self.save_pdf)
+                            elif ref.endswith('.html') or ref.endswith('.htm'):
+                                self.log(f"Queuing HTML parsing: {ref}")
+                                yield Request(ref, callback=self.parse_html_reference)
+                                
+                            else:
+                                self.log(f"Unsupported file type: {ref}")  
             technique_url = response.urljoin(technique_url.strip()) if technique_url else None
             # references_string = ' '.join(references)
-            print("references final ",references)
-            yield ( {
+            yield TechniquesTable( {
                 'GroupId':id_.strip() if id_data else None,
                 'Domain': domain_data.strip() if domain_data else None,
                 'Name': name_data.strip() if name_data else None,
@@ -215,15 +147,6 @@ class MITREAttackSpider(scrapy.Spider):
                 'Use': use_data if use_data else None,
                 "References": references
             })
-            # for ref in references:
-            #     if ref.endswith('.pdf'):
-            #         self.log(f"Queuing PDF download: {ref}")
-            #         yield Request(ref, callback=self.save_pdf)
-            #     elif ref.endswith('.html') or ref.endswith('.htm'):
-            #         self.log(f"Queuing HTML parsing: {ref}")
-            #         yield Request(ref, callback=self.parse_html_reference)
-            #     else:
-            #         self.log(f"Skipping unsupported reference type: {ref}")
             # if technique_url:
             #     yield response.follow(technique_url, self.parse_techniques)
         # # Software Table:
@@ -241,13 +164,13 @@ class MITREAttackSpider(scrapy.Spider):
                 techniques_data.append(node.strip())
             # Check if ID starts with 'S'
             # if id_data and id_data.startswith('S') and id_data[1:].isdigit():
-            #     yield SoftwareTable( {
-            #         'GroupId':id_.strip() if id_data else None,
-            #         'SID': id_data if id_data else None,
-            #         'Name': name_data if name_data else None,
-            #         'References': references_data if references_data else None,';;
-            #         'Tech b    niques': ' '.join(techniques_data) if techniques_data else None,
-            #     } )
+                # yield SoftwareTable( {
+                #     'GroupId':id_.strip() if id_data else None,
+                #     'SID': id_data if id_data else None,
+                #     'Name': name_data if name_data else None,
+                #     'References': references_data if references_data else None,
+                #     'Techniques': ' '.join(techniques_data) if techniques_data else None,
+                # } )
 #         # campaigns   
         # if response.css('h2#campaigns'):
         #     for row in response.xpath('//*[@id="v-attckmatrix"]/div[2]/div/div/div/div[3]'):

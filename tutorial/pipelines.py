@@ -189,7 +189,7 @@ class MySQLPipeline:
     def process_item(self, item, spider):
         try:
             if isinstance(item, GroupTable):
-                query = self.create_group_table_query(item)
+                query = self.create_group_table_query(item) 
             elif isinstance(item, TechniquesTable):
                 query = self.create_techniques_table_query(item)
                 print(query)
@@ -340,9 +340,9 @@ class MySQLPipeline:
           
         }}
     }}
-"""
+"""  
 
-
+  
 
         uses = item.get('Use', '').replace('"', '\\"')
         doc = self.nlp(uses)
@@ -749,16 +749,32 @@ class MySQLPipeline:
             return ""
  
     def create_references(self, references, id, ref_type):
+        # try:
+        #     links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', references)
+        #     triples = ""
+        #     for i, link in enumerate(links, start=1):
+        #         triples += f'ex:{id}  a  ex:referenceUrl; ex:url "{link}" .\n'
+        #     return triples
+        # except Exception as e:
+        #     print(f"An error occurred while creating references: {e}")
+        #     return ""
         try:
-            links = re.findall(r'https?://(?:[-\w.]|(?:%[\da-fA-F]{2}))+', references)
-            triples = ""
-            for i, link in enumerate(links, start=1):
-                triples += f'ex:{id}  a  ex:referenceUrl; ex:url "{link}" .\n'
-            return triples
+                triples = ""
+                for ref in references:
+                    link = ref.get("link", "").strip()
+                    body = ref.get("body", "").strip()
+                    
+                    if link:  # Ensure the link is not empty
+                        triples += f'ex:{id} a ex:referenceUrl; ex:url "{link}"'
+                        if body:  # Add the body if it exists
+                            triples += f'; ex:body "{body}"'
+                            print("body in graph db " ,body) 
+                        triples += " .\n" 
+                
+                return triples
         except Exception as e:
-            print(f"An error occurred while creating references: {e}")
-            return ""
-
+                print(f"An error occurred while creating references: {e}")
+                return ""
 
 
     def store_group_entities(self, group_uri, group_entities):
